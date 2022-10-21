@@ -1,6 +1,12 @@
-using Amazon.S3;
+using Amazon.DynamoDBv2;
+using Core.Authentication.API.Contracts.Requests;
+using Core.Authentication.API.Repositories;
+using Core.Authentication.API.Validation;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -10,7 +16,14 @@ builder.Services.AddControllers();
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 builder.Services.AddSwaggerGen();
-builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddAWSService<IAmazonDynamoDB>();
+
+builder.Services.AddSingleton<ICustomerRepository, CustomerRepository>(provider =>
+    new CustomerRepository(provider.GetRequiredService<IAmazonDynamoDB>(),
+        builder.Configuration.GetValue<string>("Database:TableName")));
+
+
+builder.Services.AddTransient<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
 
 var app = builder.Build();
 
@@ -22,11 +35,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+
 
 app.MapGet("/", () => "Welcome to running ASP.NET Core Minimal API on AWS Lambda");
 
