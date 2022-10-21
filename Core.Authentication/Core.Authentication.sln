@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Authentication.API", "src\Core.Authentication\src\Core.Authentication.API\Core.Authentication.API.csproj", "{88DAA1EF-333E-42E7-AA73-0A0711F7B40B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Authentication.API", "src\Core.Authentication.API\Core.Authentication.API.csproj", "{88DAA1EF-333E-42E7-AA73-0A0711F7B40B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Authentication.CDK", "src\Core.Authentication.CDK\Core.Authentication.CDK.csproj", "{2D3D9A0C-9388-4B86-BEB7-2B29B9001B66}"
 EndProject

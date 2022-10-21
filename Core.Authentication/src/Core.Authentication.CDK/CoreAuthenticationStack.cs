@@ -12,7 +12,7 @@ namespace CoreAuthenticationCdk
         {
             // The code that defines your stack goes here
 
-            var dockerCode = DockerImageCode.FromImageAsset("src/Core.Authentication/src/Core.Authentication.API");
+            var dockerCode = DockerImageCode.FromImageAsset("src/Core.Authentication.API");
 
 
             //TODO: One gateway created in Terraform and shared
