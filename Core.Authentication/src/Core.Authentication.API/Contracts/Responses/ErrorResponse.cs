@@ -2,9 +2,9 @@ namespace Core.Authentication.API.Contracts.Responses;
 
 public class ErrorResponse
 {
-    private string Message { get; }
+    public string Message { get; }
 
-    private string? Error { get;  }
+    public string? Error { get;  }
 
     public ErrorResponse(string message, string? error)
     {
