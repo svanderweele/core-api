@@ -69,14 +69,15 @@ if (app.Environment.IsDevelopment())
 }
 
 //TODO: Only show swagger on non production environment
+//TODO: Improve how we store server configuration
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

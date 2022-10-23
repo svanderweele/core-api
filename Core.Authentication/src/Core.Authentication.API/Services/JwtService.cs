@@ -15,6 +15,12 @@ public class JwtService : IJwtService
     public JwtService(IOptions<JwtSettings> settings)
     {
         _settings = settings;
+
+        if (string.IsNullOrEmpty(_settings.Value.Secret))
+        {
+            //TODO: Custom Exceptions
+            throw new Exception("Missing JWT Secret!");
+        }
     }
     
     public string Generate(CustomerDto user)

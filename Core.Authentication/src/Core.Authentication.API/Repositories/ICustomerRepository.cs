@@ -7,9 +7,10 @@ public interface ICustomerRepository
     
     Task<bool> CreateAsync(CustomerDto customer, CancellationToken cancellationToken);
 
-    Task<CustomerDto?> GetAsync(Guid id, CancellationToken cancellationToken);
+    Task<CustomerDto?> GetAsync(string id, CancellationToken cancellationToken);
 
     Task<bool> UpdateAsync(CustomerDto customer, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
+    
 }
