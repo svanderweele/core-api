@@ -1,5 +1,6 @@
 using Amazon.DynamoDBv2;
 using Core.Authentication.API.Contracts.Requests;
+using Core.Authentication.API.Providers.Authentication;
 using Core.Authentication.API.Repositories;
 using Core.Authentication.API.Services;
 using Core.Authentication.API.Settings;
