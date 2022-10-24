@@ -1,4 +1,13 @@
-﻿namespace Core.Gaming.API;
+﻿using Amazon.DynamoDBv2;
+using Core.Gaming.API.Contracts.Requests;
+using Core.Gaming.API.Providers.Authentication;
+using Core.Gaming.API.Repositories;
+using Core.Gaming.API.Services;
+using Core.Gaming.API.Settings;
+using Core.Gaming.API.Validation;
+using FluentValidation;
+
+namespace Core.Gaming.API;
 
 public class Startup
 {
@@ -13,8 +22,29 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
+        
+        services.AddAuthentication(CoreAuthHandler.SchemeName)
+            .AddScheme<CoreAuthSchemeOptions, CoreAuthHandler>(CoreAuthHandler.SchemeName,null);
 
+        
+        services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
+        
+        var awsOptions = Configuration.GetAWSOptions();
+        services.AddDefaultAWSOptions(awsOptions);
+        services.AddAWSService<IAmazonDynamoDB>();
+
+        services.Configure<DatabaseSettings>(Configuration.GetSection(DatabaseSettings.KeyName));
+        
+        services.AddSingleton<IGameRepository, GameRepository>();
+        services.AddSingleton<IGameCollectionRepository, GameCollectionRepository>();
+        services.AddSingleton<IGameCategoryRepository, GameCategoryRepository>();
+
+        services.AddSingleton<ICollectionService, CollectionService>();
+        
+        //Validation Services
+        services.AddTransient<IValidator<CreateGameRequest>, CreateGameRequestValidator>();
+
+        
         services.AddSwaggerGen();
     }
 
@@ -32,7 +62,10 @@ public class Startup
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseEndpoints(endpoints =>
         {

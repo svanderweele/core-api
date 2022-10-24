@@ -1,39 +1,76 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Gaming.API.Contracts.Data;
+using Core.Gaming.API.Contracts.Requests;
+using Core.Gaming.API.Repositories;
+using Core.Gaming.API.Validation;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Gaming.API.Controllers;
 
 [Route("api/[controller]")]
 public class GamesController : ControllerBase
 {
-    // GET api/values
-    [HttpGet]
-    public IEnumerable<string> Get()
+    private readonly IGameRepository _repository;
+    private readonly IValidator<CreateGameRequest> _validator;
+
+    public GamesController(IGameRepository repository, IValidator<CreateGameRequest> validator)
     {
-        return new string[] { "game1", "game2" };
+        _repository = repository;
+        _validator = validator;
     }
 
-    // GET api/values/5
-    [HttpGet("{id}")]
-    public string Get(int id)
+    
+    [HttpGet("")]
+    public async Task<IEnumerable<Game>> GetAll(CancellationToken cancellationToken)
     {
-        return "value";
+        var games = await _repository.GetAllAsync(cancellationToken);
+        return games;
     }
 
-    // POST api/values
+    [HttpGet("{id:guid}", Name = "GetGame")]
+    public async Task<ActionResult<Game>> Get(Guid id, CancellationToken cancellationToken)
+    {
+        var game = await _repository.GetAsync(id, cancellationToken);
+
+        if (game == null)
+        {
+            //TODO: Custom exceptions
+            throw new Exception($"Not Found with id {id}");
+        }
+
+        return game;
+    }
+
     [HttpPost]
-    public void Post([FromBody] string value)
+    public async Task<IActionResult> Create([FromBody] CreateGameRequest request, CancellationToken cancellationToken)
     {
+       await _validator.ValidateAndThrowAsync(request, cancellationToken);
+        //TODO: Mapper for this
+        //TODO: Upload Image as Base64 then add URL
+        var game = new Game()
+        {
+            Id = Guid.NewGuid(),
+            DisplayName = request.Name,
+            DisplayIndex = request.DisplayIndex,
+            Thumbnail = request.Thumbnail,
+            GameCategory = request.GameCategory,
+            Devices = request.Devices,
+            GameCollections = request.Collections,
+            ReleaseDate = request.ReleaseDate
+        };
+
+        await _repository.CreateAsync(game, cancellationToken);
+
+        return CreatedAtRoute("GetGame", routeValues: new { id = game.Id }, value: game);
     }
 
-    // PUT api/values/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    [Authorize]
+    [HttpGet("play/{gameId}")]
+    public async Task<Game?> PlayGame(Guid gameId, CancellationToken cancellationToken)
     {
+        var game = await _repository.GetAsync(gameId, cancellationToken);
+        return game;
     }
-
-    // DELETE api/values/5
-    [HttpDelete("{id}")]
-    public void Delete(int id)
-    {
-    }
+    
 }
