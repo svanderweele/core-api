@@ -1,14 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace Core.Gaming.API.Contracts.Responses;
 
-public class ErrorResponse
+public struct ErrorResponse
 {
-    public string Message { get; }
-
-    public string? Error { get;  }
-
-    public ErrorResponse(string message, string? error)
-    {
-        Message = message;
-        Error = error;
-    }
+    [JsonPropertyName("code")] public string ErrorCode { get; set; }
+    [JsonPropertyName("message")] public string Message { get; set;}
+    [JsonPropertyName("stack")] public string? Error { get; set;}
+    [JsonPropertyName("data")] public Dictionary<string, object>? Data { get; set;}
 }

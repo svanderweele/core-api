@@ -2,6 +2,7 @@ using System.Text.Json;
 using Amazon.DynamoDBv2.DocumentModel;
 using Core.Gaming.API.Contracts.Data;
 using Core.Gaming.API.Contracts.Responses;
+using Core.Gaming.API.Exceptions;
 using Core.Gaming.API.Repositories;
 using StackExchange.Redis;
 
@@ -156,7 +157,7 @@ public class GameService : IGameService
         if (sessionRedisValue != RedisValue.Null)
         {
             //TODO: Custom exception with game and sessionId
-            throw new Exception($"Player is already playing {sessionId}");
+            throw new GameSessionAlreadyStartedException(game, sessionId);
         }
 
 

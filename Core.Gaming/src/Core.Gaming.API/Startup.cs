@@ -1,12 +1,12 @@
 ﻿using Amazon.DynamoDBv2;
 using Core.Gaming.API.Contracts.Requests;
+using Core.Gaming.API.Exceptions;
 using Core.Gaming.API.Providers.Authentication;
 using Core.Gaming.API.Repositories;
 using Core.Gaming.API.Services;
 using Core.Gaming.API.Settings;
 using Core.Gaming.API.Validation;
 using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 
