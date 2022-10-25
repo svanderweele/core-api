@@ -47,10 +47,11 @@ public class AuthenticationController : ControllerBase
         };
     }
 
+    [AllowAnonymous]
     [HttpGet("validate")]
-    public ActionResult<ValidateTokenResponse> ValidateToken([FromHeader(Name = "Authorizaton")] string authorization)
+    public ActionResult<ValidateTokenResponse> ValidateToken([FromHeader(Name = "Authorization")] string token)
     {
-        var authToken = authorization ??
+        var authToken = token ??
                         throw new NullReferenceException("Missing Authorization header");
         var claimsPrincipal = _jwtService.ValidateToken(authToken);
         if (claimsPrincipal == null)
