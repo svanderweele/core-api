@@ -30,12 +30,15 @@ public class AuthenticationController : ControllerBase
 
 
     [HttpPost("login")]
-    public async Task<LoginResponse> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<LoginResponse>> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken)
     {
         _logger.Log(LogLevel.Debug, "Generate JWT Token!");
 
         var user = await _customerRepository.GetAsync(request.Email, cancellationToken);
-        if (user == null) throw new Exception("User Not Found!");
+        if (user == null)
+        {
+            return NotFound();
+        }
 
         //TODO: Check Password against Cognito?
         // if (user.Password != tokenRequest.Password) throw new Exception("Invalid Credentials!");
