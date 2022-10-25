@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+  pre_build:
+    commands:
+      - echo Installing AWS CDK
+      - npm install aws-cdk -g
+      - echo Installing Dotnet 6
+      - /usr/local/bin/dotnet-install.sh --channel LTS
+  build:
+    commands:
+      - echo Build started on `date`
+      - cd Core.Authentication
+      - cdk deploy
+  post_build:
+    commands:
+      - echo Build completed on `date`
