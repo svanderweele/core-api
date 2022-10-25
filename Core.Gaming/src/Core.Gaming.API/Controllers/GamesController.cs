@@ -40,8 +40,7 @@ public class GamesController : ControllerBase
 
         if (game == null)
         {
-            //TODO: Custom exceptions
-            throw new Exception($"Not Found with id {id}");
+            return NotFound();
         }
 
         return game;
