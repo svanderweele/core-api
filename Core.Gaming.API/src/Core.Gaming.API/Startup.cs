@@ -50,8 +50,7 @@ public class Startup
         services.AddSingleton<ICollectionService, CollectionService>();
         services.AddSingleton<IGameService, GameService>();
 
-        var redisEndpoint = "dev-redis-cluster.2mkzvu.0001.euw1.cache.amazonaws.com:6379";
-        // redisEndpoint = "localhost:7001";
+        var redisEndpoint = Configuration.GetSection("Redis").GetValue<string>("Url");
         var multiplexer = ConnectionMultiplexer.Connect(redisEndpoint);
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
         
