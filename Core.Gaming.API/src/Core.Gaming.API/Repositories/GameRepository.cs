@@ -38,28 +38,27 @@ public class GameRepository : IGameRepository
         var response = await _dynamoDb.PutItemAsync(updateRequest, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
-    
-    public async Task<IEnumerable<Game>> GetAllAsync(CancellationToken cancellationToken)
+
+    public async Task<ScanResponse?> GetAllAsync(CancellationToken cancellationToken, string? startKey)
     {
         var scanRequest = new ScanRequest()
         {
             TableName = TableName,
-            Limit = 50,
+            Limit = 2,
+            ExclusiveStartKey = startKey != null
+                ? new Dictionary<string, AttributeValue>()
+                {
+                    { "id", new AttributeValue() { S = startKey } }
+                }
+                : null,
             ConsistentRead = true
         };
 
         var response = await _dynamoDb.ScanAsync(scanRequest, cancellationToken);
-
-        var itemsAsDocument = response.Items.Select(e =>
-        {
-            var document = Document.FromAttributeMap(e);
-            return JsonSerializer.Deserialize<Game>(document.ToJson());
-        }).OfType<Game>();
-
-        return itemsAsDocument;
+        return response;
     }
-    
-    public async Task<IEnumerable<GameSimpleDto>> GetByCollectionId(Guid collectionId, CancellationToken cancellationToken)
+
+    public async Task<IEnumerable<Game>> GetByCollectionId(Guid collectionId, CancellationToken cancellationToken)
     {
         var scanRequest = new ScanRequest()
         {
@@ -71,16 +70,17 @@ public class GameRepository : IGameRepository
                 {
                     "collections", new Condition()
                     {
-                        ComparisonOperator = ComparisonOperator.CONTAINS, AttributeValueList = new List<AttributeValue>()
-                        {
-                            new AttributeValue()
+                        ComparisonOperator = ComparisonOperator.CONTAINS, AttributeValueList =
+                            new List<AttributeValue>()
                             {
-                                S = collectionId.ToString()
+                                new()
+                                {
+                                    S = collectionId.ToString()
+                                }
                             }
-                        }
                     }
                 }
-            }
+            },
         };
 
         var response = await _dynamoDb.ScanAsync(scanRequest, cancellationToken);
@@ -88,8 +88,8 @@ public class GameRepository : IGameRepository
         var itemsAsDocument = response.Items.Select(e =>
         {
             var document = Document.FromAttributeMap(e);
-            return JsonSerializer.Deserialize<GameSimpleDto>(document.ToJson());
-        }).OfType<GameSimpleDto>().ToArray();
+            return JsonSerializer.Deserialize<Game>(document.ToJson());
+        }).OfType<Game>().ToArray();
 
         return itemsAsDocument;
     }
@@ -149,5 +149,4 @@ public class GameRepository : IGameRepository
         var response = await _dynamoDb.DeleteItemAsync(deleteRequest, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
-
 }

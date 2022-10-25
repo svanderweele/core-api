@@ -6,6 +6,9 @@ using Core.Gaming.API.Services;
 using Core.Gaming.API.Settings;
 using Core.Gaming.API.Validation;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace Core.Gaming.API;
 
@@ -22,30 +25,66 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        
-        services.AddAuthentication(CoreAuthHandler.SchemeName)
-            .AddScheme<CoreAuthSchemeOptions, CoreAuthHandler>(CoreAuthHandler.SchemeName,null);
 
-        
+    
+        services.AddAuthentication(CoreAuthHandler.SchemeName)
+            .AddScheme<CoreAuthSchemeOptions, CoreAuthHandler>(CoreAuthHandler.SchemeName, null);
+
+
         services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
-        
+
+
         var awsOptions = Configuration.GetAWSOptions();
         services.AddDefaultAWSOptions(awsOptions);
         services.AddAWSService<IAmazonDynamoDB>();
 
         services.Configure<DatabaseSettings>(Configuration.GetSection(DatabaseSettings.KeyName));
-        
+        services.Configure<JwtSettings>(Configuration.GetSection(JwtSettings.KeyName));
+
+        services.AddSingleton<IJwtService, JwtService>();
+
         services.AddSingleton<IGameRepository, GameRepository>();
         services.AddSingleton<IGameCollectionRepository, GameCollectionRepository>();
         services.AddSingleton<IGameCategoryRepository, GameCategoryRepository>();
 
         services.AddSingleton<ICollectionService, CollectionService>();
+        services.AddSingleton<IGameService, GameService>();
+
+        var redisEndpoint = "dev-redis-cluster.2mkzvu.0001.euw1.cache.amazonaws.com:6379";
+        // redisEndpoint = "localhost:7001";
+        var multiplexer = ConnectionMultiplexer.Connect(redisEndpoint);
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
         
+
         //Validation Services
         services.AddTransient<IValidator<CreateGameRequest>, CreateGameRequestValidator>();
 
+
         
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("Bearer",
+                new OpenApiSecurityScheme()
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter into field the word 'Bearer' following by space and JWT",
+                    Name = "Authorization", Type = SecuritySchemeType.ApiKey
+                });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -54,10 +93,12 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI();
         }
 
+        app.UseSwagger();
+        app.UseSwaggerUI();
+
+        app.UseMiddleware<ExceptionMiddleware>();
         app.UseHttpsRedirection();
 
         app.UseRouting();
@@ -65,7 +106,6 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseEndpoints(endpoints =>
         {
