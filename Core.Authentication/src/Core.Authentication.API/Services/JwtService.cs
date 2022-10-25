@@ -33,7 +33,7 @@ public class JwtService : IJwtService
         var secret = Encoding.UTF8.GetBytes(_settings.Value.Secret);
         var signingCredentials =
             new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.UtcNow.AddMinutes(5),
+        var token = new JwtSecurityToken(claims: claims, expires: DateTime.UtcNow.AddMinutes(15),
             signingCredentials: signingCredentials);
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
