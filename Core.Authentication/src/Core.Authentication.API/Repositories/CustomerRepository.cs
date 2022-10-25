@@ -4,44 +4,49 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Core.Authentication.API.Contracts.Data;
+using Core.Authentication.API.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Core.Authentication.API.Repositories;
 
 public class CustomerRepository : ICustomerRepository
 {
     private readonly IAmazonDynamoDB _dynamoDb;
-    private readonly string _tableName;
+    private readonly IOptions<DatabaseSettings> _databaseSettings;
 
-    public CustomerRepository(IAmazonDynamoDB dynamoDb, string tableName)
+    private string TableName => _databaseSettings.Value.TableName;
+
+
+    public CustomerRepository(IAmazonDynamoDB dynamoDb, IOptions<DatabaseSettings> databaseSettings)
     {
         _dynamoDb = dynamoDb;
-        _tableName = tableName;
+        _databaseSettings = databaseSettings;
     }
 
     public async Task<bool> CreateAsync(CustomerDto customer, CancellationToken cancellationToken)
     {
         var customerJson = JsonSerializer.Serialize(customer);
-        var itemAttributes = Document.FromJson(customerJson).ToAttributeMap();
-        
+        var itemAsDocument = Document.FromJson(customerJson);
+        var itemAttributes = itemAsDocument.ToAttributeMap();
 
-        var createRequest = new PutItemRequest()
+        var updateRequest = new PutItemRequest()
         {
-            TableName = _tableName,
-            Item = itemAttributes,
+            TableName = TableName,
+            Item = itemAttributes
         };
 
-        var response = await _dynamoDb.PutItemAsync(createRequest, cancellationToken);
+        var response = await _dynamoDb.PutItemAsync(updateRequest, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
-    public async Task<CustomerDto?> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<CustomerDto?> GetAsync(string id, CancellationToken cancellationToken)
     {
         var getRequest = new GetItemRequest()
         {
-            TableName = _tableName,
+            TableName = TableName,
             Key = new Dictionary<string, AttributeValue>()
             {
-                { "pk", new AttributeValue() { S = id.ToString() } }
+                { "email", new AttributeValue() { S = id.ToString() } }
             },
             //This will ensure latest up to date data at a cost of higher usage https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html
             ConsistentRead = true
@@ -66,7 +71,7 @@ public class CustomerRepository : ICustomerRepository
 
         var updateRequest = new PutItemRequest()
         {
-            TableName = _tableName,
+            TableName = TableName,
             Item = itemAttributes
         };
 
@@ -78,7 +83,7 @@ public class CustomerRepository : ICustomerRepository
     {
         var deleteRequest = new DeleteItemRequest()
         {
-            TableName = _tableName,
+            TableName = TableName,
             Key = new Dictionary<string, AttributeValue>()
             {
                 { "pk", new AttributeValue() { S = id.ToString() } },
@@ -88,4 +93,5 @@ public class CustomerRepository : ICustomerRepository
         var response = await _dynamoDb.DeleteItemAsync(deleteRequest, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
+
 }
