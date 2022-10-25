@@ -32,7 +32,7 @@ namespace Core.Gaming.CDK
                 Resources = new string[] { "*" },
             });
 
-            var dockerCode = DockerImageCode.FromImageAsset("src/Core.Gaming.API");
+            var dockerCode = DockerImageCode.FromImageAsset("./src/Core.Gaming.API");
 
 
             //TODO: One gateway created in Terraform and shared
@@ -52,7 +52,8 @@ namespace Core.Gaming.CDK
                 new DockerImageFunctionProps()
                 {
                     Code = dockerCode,
-                    Description = "Testing a Docker function", Architecture = Architecture.ARM_64,
+                    Description = "Testing a Docker function",
+                    Architecture = Architecture.ARM_64,
                     InitialPolicy = new[] { vpcPolicy, dynamoDbPolicy },
                     Vpc = vpc,
                     SecurityGroups = new[] { securityGroup },

@@ -24,13 +24,13 @@ namespace CoreAuthenticationCdk
                 Actions = new string[] { "dynamodb:*" },
                 Resources = new string[] { "*" },
             });
-            
+
             //TODO: One gateway created in Terraform and shared
             var gateway = new RestApi(this, "core-auth-gateway", new RestApiProps()
             {
             });
-            
-            var dockerCode = DockerImageCode.FromImageAsset("src/Core.Authentication.API");
+
+            var dockerCode = DockerImageCode.FromImageAsset("./src/Core.Authentication.API");
             var testFunction = new Amazon.CDK.AWS.Lambda.DockerImageFunction(this, "authentication",
                 new DockerImageFunctionProps()
                 {
@@ -43,7 +43,7 @@ namespace CoreAuthenticationCdk
                     }
                 });
 
-            
+
             gateway.Root.AddProxy(new ProxyResourceOptions()
             {
                 DefaultIntegration = new LambdaIntegration(testFunction),

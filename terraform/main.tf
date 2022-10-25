@@ -34,9 +34,9 @@ module "vpc" {
 
 
 module "codebuild_be" {
+  source                    = "./modules/codebuild"
   project-name              = "core-api-project"
   repo-url                  = "https://github.com/svanderweele/core-api.git"
-  source                    = "./modules/codebuild"
   codebuild-bucket-name     = "codebuild-bucket-be"
   githubPersonalAccessToken = var.personalAccessToken
 }

@@ -158,7 +158,7 @@ resource "aws_codebuild_source_credential" "example" {
 }
 
 resource "aws_codebuild_project" "example" {
-  name                   = "${terraform.workspace}-project"
+  name                   = "${terraform.workspace}-${var.project-name}-project"
   build_timeout          = 5
   service_role           = aws_iam_role.example.arn
   concurrent_build_limit = 1
