@@ -49,15 +49,20 @@ public class GameService : IGameService
         _logger.Log(LogLevel.Debug, "[C] Got All DB Games");
         var games = await Task.WhenAll(dbGames.Select(e => PopulateGame(e, cancellationToken)));
 
+        LastEvaluatedKey? lastKey = null;
+
+        if (scanResponse.LastEvaluatedKey.TryGetValue("id", out var value))
+        {
+            lastKey = new LastEvaluatedKey()
+            {
+                Key = "id",
+                Value = value.S
+            };
+        }
+
         return new GetAllGamesResponse()
         {
-            LastEvaluatedKey = scanResponse.LastEvaluatedKey != null
-                ? new LastEvaluatedKey()
-                {
-                    Key = "id",
-                    Value = scanResponse.LastEvaluatedKey["id"].S
-                }
-                : null,
+            LastEvaluatedKey = lastKey,
             Games = games
         };
     }
