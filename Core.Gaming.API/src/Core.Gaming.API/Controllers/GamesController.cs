@@ -1,7 +1,8 @@
-﻿using Core.Gaming.API.Contracts.Data;
+﻿using System.Security.Claims;
+using Core.Gaming.API.Contracts.Data;
 using Core.Gaming.API.Contracts.Requests;
-using Core.Gaming.API.Repositories;
-using Core.Gaming.API.Validation;
+using Core.Gaming.API.Contracts.Responses;
+using Core.Gaming.API.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,27 +12,31 @@ namespace Core.Gaming.API.Controllers;
 [Route("api/[controller]")]
 public class GamesController : ControllerBase
 {
-    private readonly IGameRepository _repository;
+    private readonly IGameService _service;
     private readonly IValidator<CreateGameRequest> _validator;
+    private readonly ILogger _logger;
 
-    public GamesController(IGameRepository repository, IValidator<CreateGameRequest> validator)
+    public GamesController(IGameService service, IValidator<CreateGameRequest> validator, ILogger<GamesController> logger)
     {
-        _repository = repository;
+        _service = service;
         _validator = validator;
+        _logger = logger;
     }
 
     
     [HttpGet("")]
-    public async Task<IEnumerable<Game>> GetAll(CancellationToken cancellationToken)
+    public async Task<GetAllGamesResponse> GetAll([FromQuery] string? startKey, CancellationToken cancellationToken)
     {
-        var games = await _repository.GetAllAsync(cancellationToken);
+        _logger.Log(LogLevel.Debug, "[A] Get All Games");
+        var games = await _service.GetAllAsync(cancellationToken, startKey);
+        _logger.Log(LogLevel.Debug, "[H] Got All Games");
         return games;
     }
 
     [HttpGet("{id:guid}", Name = "GetGame")]
-    public async Task<ActionResult<Game>> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<GameSimpleDto>> Get(Guid id, CancellationToken cancellationToken)
     {
-        var game = await _repository.GetAsync(id, cancellationToken);
+        var game = await _service.GetAsync(id, cancellationToken);
 
         if (game == null)
         {
@@ -60,17 +65,35 @@ public class GamesController : ControllerBase
             ReleaseDate = request.ReleaseDate
         };
 
-        await _repository.CreateAsync(game, cancellationToken);
+        await _service.CreateAsync(game, cancellationToken);
 
         return CreatedAtRoute("GetGame", routeValues: new { id = game.Id }, value: game);
     }
 
     [Authorize]
     [HttpGet("play/{gameId}")]
-    public async Task<Game?> PlayGame(Guid gameId, CancellationToken cancellationToken)
+    public async Task<PlayGameResponse?> PlayGame(Guid gameId, CancellationToken cancellationToken)
     {
-        var game = await _repository.GetAsync(gameId, cancellationToken);
+        if (gameId == Guid.Empty)
+        {
+            throw new Exception("Invalid Game Id");
+        }
+        
+        var userId = Guid.Parse(this.User.Claims.First(e => e.Type == ClaimTypes.NameIdentifier).Value);
+        var game = await _service.PlayGame(userId, gameId, cancellationToken);
         return game;
+    }
+    
+    [HttpGet("play/validate/{sessionId}")]
+    public async Task<ActionResult<PlayGameResponse>> ValidateGameSession(string sessionId)
+    {
+        var session = await _service.ValidateGameSession(sessionId);
+
+        if (session == null)
+        {
+            return NotFound();
+        }
+        return session;
     }
     
 }

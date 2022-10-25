@@ -6,14 +6,15 @@ namespace Core.Gaming.API.Services;
 public class CollectionService : ICollectionService
 {
     private readonly IGameCollectionRepository _repository;
-    private readonly IGameRepository _gameRepository;
+    private readonly IGameService _gameService;
 
-    public CollectionService(IGameCollectionRepository repository, IGameRepository gameRepository)
+    public CollectionService(IGameCollectionRepository repository, IGameService gameService)
     {
         _repository = repository;
-        _gameRepository = gameRepository;
+        _gameService = gameService;
     }
 
+    //TODO: Try Nest Sub-Collections inside the model and retrieve by id 
     public async Task<IEnumerable<GameCollectionDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var collections = await _repository.GetAllAsync(cancellationToken);
@@ -31,16 +32,20 @@ public class CollectionService : ICollectionService
     }
 
 
-    public async Task<GameCollectionDto?> GetAsync(Guid id, CancellationToken cancellationToken,
-        List<Guid>? parentIds = null)
+    public async Task<GameCollectionDto?> GetAsync(Guid id, CancellationToken cancellationToken)
     {
         var collection = await _repository.GetAsync(id, cancellationToken);
 
         if (collection == null) return null;
 
-        var games = await _gameRepository.GetByCollectionId(collection.Id, cancellationToken);
+        return await FillCollection(collection, cancellationToken);
+    }
 
-        var subCollections = await GetSubCollections(collection.Id, cancellationToken, parentIds);
+    private async Task<GameCollectionDto> FillCollection(GameCollection collection,
+        CancellationToken cancellationToken, List<Guid>? parentIds = null)
+    {
+        var games = await _gameService.GetByCollectionId(collection.Id, cancellationToken);
+        var subCollections = await GetSubCollections(collection, cancellationToken, parentIds);
         return new GameCollectionDto(collection, subCollections, games);
     }
 
@@ -50,26 +55,24 @@ public class CollectionService : ICollectionService
     }
 
 
-    private async Task<IEnumerable<GameCollectionDto>> GetSubCollections(Guid parentId,
+    private async Task<IEnumerable<GameCollectionDto>> GetSubCollections(GameCollection parent,
         CancellationToken cancellationToken, List<Guid>? parentIds = null)
     {
-        var subCollections = await _repository.GetSubCollections(parentId, cancellationToken);
+        var collectionId = parent.Id;
+        var subCollections = await _repository.GetSubCollections(collectionId, cancellationToken);
 
         parentIds ??= new List<Guid>();
         var convertedCollections = new List<GameCollectionDto>();
-        
-        //Don't load collection if it'll cause a recursive loop
-        if (parentIds.Contains(parentId)) return convertedCollections;
 
-        parentIds.Add(parentId);
-        
+        //Don't load collection if it'll cause a recursive loop
+        if (parentIds.Contains(collectionId)) return convertedCollections;
+
+        parentIds.Add(collectionId);
+
         foreach (var subCollection in subCollections)
         {
-            var collectionDto = await GetAsync(subCollection.Id, cancellationToken, parentIds);
-            if (collectionDto != null)
-            {
-                convertedCollections.Add(collectionDto);
-            }
+            var collection = await FillCollection(subCollection, cancellationToken, parentIds);
+            convertedCollections.Add(collection);
         }
 
 
