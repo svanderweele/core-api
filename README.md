@@ -105,12 +105,16 @@ A simple application built to become more familiar with .NET 6 as well as best p
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Better Exceptions & Exception Handling
+- [ ] Improve error handling/responses
 - [ ] Add dynamic configuration files
   - [ ] Consider something like Consul
-- [ ] AWS VPC needs to be designed
 - [ ] Terraform Refactoring
-- [ ] Token Validation should be improved
+- [ ] Auth Token Validation should be improved
+- [ ] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
+- [ ] Share code via submodules
+- [ ] Consider a different approach to data handling with DynamoDB
+- [ ] Resolve issue with CodeBuild pipeline
+- [ ] FE side to it. A simple web app hosted on netlify (built in either next or angular) working with the API
 
 See the [open issues](https://github.com/svanderweele/core-api/issues) for a full list of proposed features (and known issues).
 
