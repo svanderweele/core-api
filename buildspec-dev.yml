@@ -14,7 +14,7 @@ phases:
     commands:
       - echo Build started on `date`
 #      - cd Core.Authentication
-#      - cdk deploy
+      - cd /
       - ls
       - cd Core.Gaming
       - cdk deploy
