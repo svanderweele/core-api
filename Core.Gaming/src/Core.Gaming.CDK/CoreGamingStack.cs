@@ -55,7 +55,6 @@ namespace Core.Gaming.CDK
                 {
                     Code = dockerImage,
                     Description = "Testing a Docker function",
-                    Architecture = Architecture.ARM_64,
                     InitialPolicy = new[] { vpcPolicy, dynamoDbPolicy },
                     Vpc = vpc,
                     SecurityGroups = new[] { securityGroup },

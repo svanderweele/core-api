@@ -36,7 +36,6 @@ namespace CoreAuthenticationCdk
                 {
                     Code = dockerCode,
                     Description = "Testing a Docker function",
-                    Architecture = Architecture.ARM_64,
                     InitialPolicy = new PolicyStatement[]
                     {
                         s3Policy, dynamoDbPolicy
