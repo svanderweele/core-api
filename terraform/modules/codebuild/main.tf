@@ -103,7 +103,8 @@ resource "aws_iam_role_policy" "example" {
       },
       {
         Action = [
-          "ssm:GetParameter"
+          "ssm:GetParameter",
+          "ssm:GetParameters"
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -118,6 +119,12 @@ resource "aws_iam_role_policy" "example" {
           "ec2:DescribeSecurityGroups",
           "ec2:DescribeVpcs"
         ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+
+      {
+        Action   = ["ecr:**"]
         Effect   = "Allow"
         Resource = "*"
       },
@@ -177,20 +184,28 @@ resource "aws_codebuild_project" "example" {
     type     = "S3"
     location = module.private_s3_bucket.bucket_id
   }
-
+  
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:5.0"
+    image                       = "aws/codebuild/standard:6.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+    privileged_mode = true
 
     environment_variable {
       name  = "APP_ENVIRONMENT"
       value = terraform.workspace == "dev" ? "dev" : "prod"
     }
+
+    environment_variable {
+      name  = "JWT_SECRET"
+      value = "/${terraform.workspace}/jwt-secret-code"
+      type  = "PARAMETER_STORE"
+    }
   }
 
 
+  
   logs_config {
     cloudwatch_logs {
       group_name  = "log-group"
@@ -214,8 +229,17 @@ resource "aws_codebuild_project" "example" {
   source_version = terraform.workspace == "dev" ? "develop" : "main"
 
   tags = {
-    Name = "Valhalla BE Codebuild"
+    Name = "Core BE Codebuild"
   }
+  
+  depends_on = [aws_ssm_parameter.jwt_secret]
+}
+
+resource "aws_ssm_parameter" "jwt_secret" {
+  name        = "/${terraform.workspace}/jwt-secret-code"
+  description = "The parameter description"
+  type        = "SecureString"
+  value       = var.jwtSecret
 }
 
 

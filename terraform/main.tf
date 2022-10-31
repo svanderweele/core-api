@@ -39,6 +39,7 @@ module "codebuild_be" {
   repo-url                  = "https://github.com/svanderweele/core-api.git"
   codebuild-bucket-name     = "codebuild-bucket-be"
   githubPersonalAccessToken = var.personalAccessToken
+  jwtSecret = var.jwtSecret
 }
 
 

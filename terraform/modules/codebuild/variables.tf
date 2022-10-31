@@ -15,3 +15,9 @@ variable "githubPersonalAccessToken" {
   type        = string
   description = "Personal Access Token for GitHub access"
 }
+
+variable "jwtSecret" {
+  type        = string
+  description = "JWT Secret used for Authentication"
+}
+
