@@ -14,9 +14,9 @@ phases:
     commands:
       - echo Build started on `date`
 #      - cd Core.Authentication
-      - cd /codebuild/output/src391200851/src/github.com/svanderweele/core-api/Core.Gaming/src/Core.Gaming.API
+      - cd $CODEBUILD_SRC_DIR/Core.Gaming/src/Core.Gaming.API
       - ls
-      - cd /codebuild/output/src391200851/src/github.com/svanderweele/core-api/Core.Gaming
+      - cd $CODEBUILD_SRC_DIR/Core.Gaming
       - cdk deploy
 
   post_build:
