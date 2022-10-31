@@ -48,12 +48,13 @@ namespace Core.Gaming.CDK
 
 
             var dockerImage = Code.FromAssetImage("./src/Core.Gaming.API");
-            var testFunction = new Amazon.CDK.AWS.Lambda.DockerImageFunction(this, "gaming-image",
-                new DockerImageFunctionProps()
+            var testFunction = new Amazon.CDK.AWS.Lambda.Function(this, "gaming-image",
+                new FunctionProps()
                 {
                     Code = dockerImage,
-                    Description = "Testing a Docker function",
+                    Runtime = Runtime.FROM_IMAGE,
                     Architecture = Architecture.ARM_64,
+                    Description = "Testing a Docker function",
                     InitialPolicy = new[] { vpcPolicy, dynamoDbPolicy },
                     Vpc = vpc,
                     SecurityGroups = new[] { securityGroup },
