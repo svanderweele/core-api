@@ -52,6 +52,7 @@ namespace Core.Gaming.CDK
                 new FunctionProps()
                 {
                     Code = dockerImage,
+                    Handler = Handler.FROM_IMAGE,
                     Runtime = Runtime.FROM_IMAGE,
                     Architecture = Architecture.ARM_64,
                     Description = "Testing a Docker function",
