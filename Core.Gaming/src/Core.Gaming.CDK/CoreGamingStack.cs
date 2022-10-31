@@ -2,6 +2,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.SES.Actions;
 using Constructs;
 
 namespace Core.Gaming.CDK
@@ -32,9 +33,7 @@ namespace Core.Gaming.CDK
                 Resources = new string[] { "*" },
             });
 
-            var dockerCode = DockerImageCode.FromImageAsset("./src/Core.Gaming.API");
-
-
+            
             //TODO: One gateway created in Terraform and shared
             var gateway = new RestApi(this, "gaming-auth-gateway", new RestApiProps()
             {
@@ -48,10 +47,11 @@ namespace Core.Gaming.CDK
             var securityGroup = Amazon.CDK.AWS.EC2.SecurityGroup.FromLookupById(this, "sg", "sg-042eeb1b4be1b89e1");
 
 
+            var dockerImage = Code.FromAssetImage("./src/Core.Gaming.API");
             var testFunction = new Amazon.CDK.AWS.Lambda.DockerImageFunction(this, "gaming-image",
                 new DockerImageFunctionProps()
                 {
-                    Code = dockerCode,
+                    Code = dockerImage,
                     Description = "Testing a Docker function",
                     Architecture = Architecture.ARM_64,
                     InitialPolicy = new[] { vpcPolicy, dynamoDbPolicy },
