@@ -8,18 +8,16 @@ phases:
     commands:
       - echo Installing AWS CDK
       - npm install aws-cdk -g
-      - echo Installing Dotnet 6
-      - /usr/local/bin/dotnet-install.sh --channel LTS
-      - cdk --version
+#      - echo Installing Dotnet 6
+#      - /usr/local/bin/dotnet-install.sh --channel LTS
   build:
     commands:
       - echo Build started on `date`
-#      - cd Core.Authentication
-      - cd $CODEBUILD_SRC_DIR/Core.Gaming/src/Core.Gaming.API
-      - ls
-      - cd $CODEBUILD_SRC_DIR/Core.Gaming
-      - cdk deploy
-
+#      - cd $CODEBUILD_SRC_DIR/Core.Gaming/src/Core.Gaming.API
+#      - ls
+#      - cd $CODEBUILD_SRC_DIR/Core.Gaming
+#      - cdk deploy
+      - ./deploy.sh
   post_build:
     commands:
       - echo Build completed on `date`
