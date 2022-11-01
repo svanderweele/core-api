@@ -106,8 +106,9 @@ A simple application built to become more familiar with .NET 6 as well as best p
 ## Roadmap
 
 - [ ] Improve error handling/responses
-- [ ] Add dynamic configuration files
-  - [ ] Consider something like Consul
+- [x] Add dynamic configuration files
+  - [x] Consider something like Consul
+  - [x] Dynamic Config handled through [AWS Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
 - [ ] Terraform Refactoring
 - [ ] Auth Token Validation should be improved
 - [ ] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
