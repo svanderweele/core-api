@@ -12,16 +12,18 @@ module "private_s3_bucket" {
 
     index_document = "index.html"
     error_document = "error.html"
-    routing_rules = [{
-      condition = {
-        http_error_code_returned_equals = 404
-      },
-      redirect = {
-        protocol           = "https"
-        http_redirect_code = 302
-        replace_key_with   = "index.html"
+    routing_rules  = [
+      {
+        condition = {
+          http_error_code_returned_equals = 404
+        },
+        redirect = {
+          protocol           = "https"
+          http_redirect_code = 302
+          replace_key_with   = "index.html"
+        }
       }
-    }]
+    ]
   }
 }
 
@@ -29,10 +31,10 @@ resource "aws_iam_role" "example" {
   name = "${terraform.workspace}-codebuild-deployment-role"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow",
+        Effect    = "Allow",
         Principal = {
           Service : "codebuild.amazonaws.com"
         },
@@ -62,12 +64,11 @@ resource "aws_iam_role" "example" {
 }
 
 
-
 resource "aws_iam_policy" "codebuild_policy" {
   name = "${terraform.workspace}-codebuild-policy"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       # TODO: Tighten up the codebuild policy
       {
@@ -93,7 +94,7 @@ resource "aws_iam_role_policy" "example" {
   role = aws_iam_role.example.name
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       # TODO: Tighten up the codebuild policy
       {
@@ -139,8 +140,8 @@ resource "aws_iam_role_policy" "example" {
         Resource = "*"
       },
       {
-        Action = ["s3:**"]
-        Effect = "Allow"
+        Action   = ["s3:**"]
+        Effect   = "Allow"
         Resource = [
           "${module.private_s3_bucket.bucket_arn}",
           "${module.private_s3_bucket.bucket_arn}/*"
@@ -155,7 +156,6 @@ resource "aws_iam_role_policy" "example" {
     ]
   })
 }
-
 
 
 resource "aws_codebuild_source_credential" "example" {
@@ -184,23 +184,22 @@ resource "aws_codebuild_project" "example" {
     type     = "S3"
     location = module.private_s3_bucket.bucket_id
   }
-  
+
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
     image                       = "aws/codebuild/standard:6.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
-    privileged_mode = true
+    privileged_mode             = true
 
     environment_variable {
       name  = "APP_ENVIRONMENT"
       value = terraform.workspace == "dev" ? "dev" : "prod"
     }
-    
+
   }
 
 
-  
   logs_config {
     cloudwatch_logs {
       group_name  = "log-group"
@@ -226,20 +225,26 @@ resource "aws_codebuild_project" "example" {
   tags = {
     Name = "Core BE Codebuild"
   }
-  
-  depends_on = [aws_ssm_parameter.jwt_secret]
+
+  depends_on = [aws_ssm_parameter.jwt_secret, aws_ssm_parameter.jwt_issuer, aws_ssm_parameter.redis_endpoint]
+}
+
+resource "aws_ssm_parameter" "redis_endpoint" {
+  name  = "/${terraform.workspace}/coreapp/redis/endpoint"
+  type  = "SecureString"
+  value = "dev-redis-cluster.2mkzvu.0001.euw1.cache.amazonaws.com:6379"
 }
 
 resource "aws_ssm_parameter" "jwt_secret" {
-  name        = "/${terraform.workspace}/coreapp/jwt/secret"
-  type        = "SecureString"
-  value       = var.jwtSecret
+  name  = "/${terraform.workspace}/coreapp/jwt/secret"
+  type  = "SecureString"
+  value = var.jwtSecret
 }
 
 resource "aws_ssm_parameter" "jwt_issuer" {
-  name        = "/${terraform.workspace}/coreapp/jwt/issuer"
-  type        = "SecureString"
-  value       = "test-issuer"
+  name  = "/${terraform.workspace}/coreapp/jwt/issuer"
+  type  = "SecureString"
+  value = "test-issuer"
 }
 
 

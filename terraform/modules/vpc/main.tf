@@ -3,6 +3,8 @@ module "vpc" {
 
   name = "${terraform.workspace}-core-vpc"
   cidr = "10.0.0.0/16"
+  default_vpc_enable_dns_hostnames = true
+  default_vpc_enable_dns_support = true
 
   azs             = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
