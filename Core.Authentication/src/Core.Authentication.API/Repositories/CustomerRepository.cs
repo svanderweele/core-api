@@ -12,12 +12,12 @@ namespace Core.Authentication.API.Repositories;
 public class CustomerRepository : ICustomerRepository
 {
     private readonly IAmazonDynamoDB _dynamoDb;
-    private readonly IOptions<DatabaseSettings> _databaseSettings;
+    private readonly IOptions<ConnectionStringsSettings> _databaseSettings;
 
-    private string TableName => _databaseSettings.Value.TableName;
+    private string TableName => _databaseSettings.Value.UsersTableName;
 
 
-    public CustomerRepository(IAmazonDynamoDB dynamoDb, IOptions<DatabaseSettings> databaseSettings)
+    public CustomerRepository(IAmazonDynamoDB dynamoDb, IOptions<ConnectionStringsSettings> databaseSettings)
     {
         _dynamoDb = dynamoDb;
         _databaseSettings = databaseSettings;

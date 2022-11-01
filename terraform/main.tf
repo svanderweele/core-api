@@ -95,7 +95,7 @@ module "sqs-queue" {
   queue-name = "registration"
 }
 
-resource "aws_elasticache_cluster" "example" {
+resource "aws_elasticache_cluster" "game-cluster" {
   cluster_id        = "${terraform.workspace}-redis-cluster"
   engine            = "redis"
   node_type         = "cache.t3.micro"
@@ -112,4 +112,48 @@ resource "aws_elasticache_cluster" "example" {
 resource "aws_elasticache_subnet_group" "subnet_group" {
   name       = "${terraform.workspace}-subnet-group"
   subnet_ids = [module.vpc.subnets_public[0]]
+}
+
+
+resource "aws_ssm_parameter" "game_db_name" {
+  name  = "/${terraform.workspace}/coreapp/connectionStrings/gameTableName"
+  type  = "SecureString"
+  value = module.games-db.tableName
+}
+
+resource "aws_ssm_parameter" "game_collection_db_name" {
+  name  = "/${terraform.workspace}/coreapp/connectionStrings/gameCollectionTableName"
+  type  = "SecureString"
+  value = module.game-collections-db.tableName
+}
+
+resource "aws_ssm_parameter" "game_category_db_name" {
+  name  = "/${terraform.workspace}/coreapp/connectionStrings/gameCategoryTableName"
+  type  = "SecureString"
+  value = module.game-categories-db.tableName
+}
+
+resource "aws_ssm_parameter" "users_db_name" {
+  name  = "/${terraform.workspace}/coreapp/connectionStrings/usersTableName"
+  type  = "SecureString"
+  value = module.users-db.tableName
+}
+
+
+resource "aws_ssm_parameter" "redis_endpoint" {
+  name  = "/${terraform.workspace}/coreapp/redis/endpoint"
+  type  = "SecureString"
+  value = "${aws_elasticache_cluster.game-cluster.cache_nodes[0].address}:${aws_elasticache_cluster.game-cluster.cache_nodes[0].port}"
+}
+
+resource "aws_ssm_parameter" "jwt_secret" {
+  name  = "/${terraform.workspace}/coreapp/jwt/secret"
+  type  = "SecureString"
+  value = var.jwtSecret
+}
+
+resource "aws_ssm_parameter" "jwt_issuer" {
+  name  = "/${terraform.workspace}/coreapp/jwt/issuer"
+  type  = "SecureString"
+  value = "test-issuer"
 }

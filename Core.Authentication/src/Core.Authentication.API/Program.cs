@@ -69,7 +69,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection(DatabaseSettings.KeyName));
+builder.Services.Configure<ConnectionStringsSettings>(builder.Configuration.GetSection(ConnectionStringsSettings.KeyName));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.KeyName));
 
 

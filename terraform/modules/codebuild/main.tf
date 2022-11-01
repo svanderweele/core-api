@@ -225,27 +225,8 @@ resource "aws_codebuild_project" "example" {
   tags = {
     Name = "Core BE Codebuild"
   }
-
-  depends_on = [aws_ssm_parameter.jwt_secret, aws_ssm_parameter.jwt_issuer, aws_ssm_parameter.redis_endpoint]
 }
 
-resource "aws_ssm_parameter" "redis_endpoint" {
-  name  = "/${terraform.workspace}/coreapp/redis/endpoint"
-  type  = "SecureString"
-  value = "dev-redis-cluster.2mkzvu.0001.euw1.cache.amazonaws.com:6379"
-}
-
-resource "aws_ssm_parameter" "jwt_secret" {
-  name  = "/${terraform.workspace}/coreapp/jwt/secret"
-  type  = "SecureString"
-  value = var.jwtSecret
-}
-
-resource "aws_ssm_parameter" "jwt_issuer" {
-  name  = "/${terraform.workspace}/coreapp/jwt/issuer"
-  type  = "SecureString"
-  value = "test-issuer"
-}
 
 
 resource "aws_codebuild_webhook" "example" {
