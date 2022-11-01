@@ -83,6 +83,7 @@ public class GamesController : ControllerBase
         return game;
     }
     
+    [Authorize]
     [HttpGet("play/validate/{sessionId}")]
     public async Task<ActionResult<PlayGameResponse>> ValidateGameSession(string sessionId)
     {

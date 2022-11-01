@@ -152,7 +152,7 @@ public class GameService : IGameService
 
         if (game == null)
         {
-            throw new Exception("Game Not Found!");
+            throw new GameNotFoundException(gameId);
         }
 
         var db = _redis.GetDatabase();

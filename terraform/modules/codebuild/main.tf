@@ -236,10 +236,15 @@ resource "aws_codebuild_project" "example" {
 }
 
 resource "aws_ssm_parameter" "jwt_secret" {
-  name        = "/${terraform.workspace}/jwt-secret-code"
-  description = "The parameter description"
+  name        = "/${terraform.workspace}/coreapp/jwt/secret"
   type        = "SecureString"
   value       = var.jwtSecret
+}
+
+resource "aws_ssm_parameter" "jwt_issuer" {
+  name        = "/${terraform.workspace}/coreapp/jwt/issuer"
+  type        = "SecureString"
+  value       = "test-issuer"
 }
 
 

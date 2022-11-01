@@ -34,6 +34,12 @@ namespace Core.Gaming.CDK
                 Resources = new string[] { "*" },
             });
 
+            var ssmPolicy = new Amazon.CDK.AWS.IAM.PolicyStatement(new Amazon.CDK.AWS.IAM.PolicyStatementProps
+            {
+                Actions = new string[] { "ssm:GetParametersByPath" },
+                Resources = new string[] { "*" },
+            });
+
 
             //TODO: One gateway created in Terraform and shared
             var gateway = new RestApi(this, "gaming-auth-gateway", new RestApiProps()
@@ -47,7 +53,6 @@ namespace Core.Gaming.CDK
 
             var securityGroup = Amazon.CDK.AWS.EC2.SecurityGroup.FromLookupById(this, "sg", "sg-042eeb1b4be1b89e1");
 
-            var secretKey = System.Environment.GetEnvironmentVariable("JWT_SECRET");
 
             var dockerImage = DockerImageCode.FromImageAsset("./src/Core.Gaming.API");
             var testFunction = new Amazon.CDK.AWS.Lambda.DockerImageFunction(this, "gaming-image",
@@ -55,15 +60,17 @@ namespace Core.Gaming.CDK
                 {
                     Code = dockerImage,
                     Description = "Testing a Docker function",
-                    InitialPolicy = new[] { vpcPolicy, dynamoDbPolicy },
+                    InitialPolicy = new[]
+                    {
+                        vpcPolicy,
+                        dynamoDbPolicy, 
+                        ssmPolicy
+                    },
                     Vpc = vpc,
                     SecurityGroups = new[] { securityGroup },
-                    Timeout = Duration.Seconds(30),
-                    Environment = new Dictionary<string, string>()
-                    {
-                        { "JWT_SECRET_TOKEN", secretKey }
-                    }
+                    Timeout = Duration.Seconds(30)
                 });
+
 
             gateway.Root.AddProxy(new ProxyResourceOptions()
             {

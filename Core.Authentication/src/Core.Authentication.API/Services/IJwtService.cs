@@ -6,5 +6,4 @@ namespace Core.Authentication.API.Services;
 public interface IJwtService
 {
     string Generate(CustomerDto customer);
-    ClaimsPrincipal? ValidateToken(string authToken);
 }

@@ -1,12 +1,14 @@
+using System.Text;
 using Amazon.DynamoDBv2;
 using Core.Authentication.API.Contracts.Requests;
-using Core.Authentication.API.Providers.Authentication;
 using Core.Authentication.API.Repositories;
 using Core.Authentication.API.Services;
 using Core.Authentication.API.Settings;
 using Core.Authentication.API.Validation;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +44,29 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddAuthentication(CoreAuthHandler.SchemeName)
-    .AddScheme<CoreAuthSchemeOptions, CoreAuthHandler>(CoreAuthHandler.SchemeName,null);
+builder.Configuration.AddSystemsManager(source =>
+{
+    source.Path = "/dev/coreapp";
+    source.ReloadAfter = TimeSpan.FromMinutes(5);
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection(JwtSettings.KeyName).Get<JwtSettings>();
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new
+            SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes
+                (jwtSettings.Secret)),
+        
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidateLifetime = true,
+        ValidateAudience = false
+    };
+});
 
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection(DatabaseSettings.KeyName));
@@ -76,12 +99,12 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 
-app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapGet("/", () => "Welcome to running ASP.NET Core Minimal API on AWS Lambda");
 

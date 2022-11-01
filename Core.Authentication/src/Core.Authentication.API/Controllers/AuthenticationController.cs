@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Core.Authentication.API.Contracts.Data;
 using Core.Authentication.API.Contracts.Requests;
 using Core.Authentication.API.Contracts.Responses;
@@ -7,6 +9,7 @@ using Core.Authentication.API.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Core.Authentication.API.Controllers;
 
@@ -27,50 +30,6 @@ public class AuthenticationController : ControllerBase
         _createCustomerValidator = createCustomerValidator;
         _jwtService = jwtService;
     }
-
-
-    [HttpPost("login")]
-    public async Task<ActionResult<LoginResponse>> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken)
-    {
-        _logger.Log(LogLevel.Debug, "Generate JWT Token!");
-
-        var user = await _customerRepository.GetAsync(request.Email, cancellationToken);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        //TODO: Check Password against Cognito?
-        // if (user.Password != tokenRequest.Password) throw new Exception("Invalid Credentials!");
-
-        var token = _jwtService.Generate(user);
-        return new LoginResponse()
-        {
-            Token = token
-        };
-    }
-
-    [AllowAnonymous]
-    [HttpGet("validate")]
-    public ActionResult<ValidateTokenResponse> ValidateToken([FromHeader(Name = "Authorization")] string token)
-    {
-        var authToken = token ??
-                        throw new NullReferenceException("Missing Authorization header");
-        var claimsPrincipal = _jwtService.ValidateToken(authToken);
-        if (claimsPrincipal == null)
-        {
-            return Unauthorized();
-        }
-
-        return Ok(new ValidateTokenResponse()
-        {
-            Id = Guid.Parse(claimsPrincipal.Claims.First(e => e.Type == ClaimTypes.NameIdentifier).Value),
-            Name = claimsPrincipal.Claims.First(e => e.Type == ClaimTypes.Name).Value,
-            Email = claimsPrincipal.Claims.First(e => e.Type == ClaimTypes.Email).Value,
-        });
-    }
-
-
 
     [HttpPost("register"), AllowAnonymous]
     public async Task<IActionResult> Register(CreateCustomerRequest request, CancellationToken cancellationToken)
@@ -102,11 +61,38 @@ public class AuthenticationController : ControllerBase
         return CreatedAtRoute("Get", routeValues: new { id = customer.Id }, value: customer);
     }
 
+    [HttpPost("login")]
+    public async Task<ActionResult<LoginResponse>> GenerateTokenAsync(LoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        _logger.Log(LogLevel.Debug, "Generate JWT Token!");
+
+        var user = await _customerRepository.GetAsync(request.Email, cancellationToken);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        //TODO: Check Password against Cognito?
+        // if (user.Password != tokenRequest.Password) throw new Exception("Invalid Credentials!");
+
+        var token = _jwtService.Generate(user);
+        return new LoginResponse()
+        {
+            Token = token
+        };
+    }
+
+
     [Authorize]
     [HttpGet("", Name = "Get")]
-    public async Task<ActionResult<CustomerDto>> Get(string id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CustomerDto>> Get(CancellationToken cancellationToken)
     {
-        var customer = await _customerRepository.GetAsync(id, cancellationToken);
+        var id = User.Claims.SingleOrDefault(e => e.Type == ClaimTypes.Email);
+
+        var customerId = id.Value;
+        
+        var customer = await _customerRepository.GetAsync(customerId, cancellationToken);
 
         if (customer == null)
         {
@@ -115,5 +101,4 @@ public class AuthenticationController : ControllerBase
 
         return Ok(customer);
     }
-
 }

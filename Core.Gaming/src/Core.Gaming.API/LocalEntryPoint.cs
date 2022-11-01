@@ -12,5 +12,19 @@ public class LocalEntryPoint
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.ConfigureAppConfiguration(e =>
+                {
+                    e.AddSystemsManager(source =>
+                    {
+                        //TODO: Environment Agnostic Path
+                        source.Path = "/dev/coreapp";
+                        source.ReloadAfter = TimeSpan.FromMinutes(5);
+                    });
+
+                });
+
+                webBuilder.UseStartup<Startup>();
+            });
 }

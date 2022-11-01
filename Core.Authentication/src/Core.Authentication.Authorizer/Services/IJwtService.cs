@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Core.Gaming.API.Services;
+namespace Core.Authentication.Authorizer.Services;
 
 public interface IJwtService
 {

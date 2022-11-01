@@ -1,12 +1,14 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Text;
+using Amazon.DynamoDBv2;
 using Core.Gaming.API.Contracts.Requests;
 using Core.Gaming.API.Exceptions;
-using Core.Gaming.API.Providers.Authentication;
 using Core.Gaming.API.Repositories;
 using Core.Gaming.API.Services;
 using Core.Gaming.API.Settings;
 using Core.Gaming.API.Validation;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 
@@ -14,6 +16,7 @@ namespace Core.Gaming.API;
 
 public class Startup
 {
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -25,13 +28,25 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-
-    
-        services.AddAuthentication(CoreAuthHandler.SchemeName)
-            .AddScheme<CoreAuthSchemeOptions, CoreAuthHandler>(CoreAuthHandler.SchemeName, null);
-
-
         services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
+      
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        {
+            var jwtSettings = Configuration.GetSection(JwtSettings.KeyName).Get<JwtSettings>();
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new
+                    SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes
+                        (jwtSettings.Secret)),
+        
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings.Issuer,
+                ValidateLifetime = true,
+                ValidateAudience = false
+            };
+        });
 
 
         var awsOptions = Configuration.GetAWSOptions();
@@ -39,9 +54,6 @@ public class Startup
         services.AddAWSService<IAmazonDynamoDB>();
 
         services.Configure<DatabaseSettings>(Configuration.GetSection(DatabaseSettings.KeyName));
-        services.Configure<JwtSettings>(Configuration.GetSection(JwtSettings.KeyName));
-
-        services.AddSingleton<IJwtService, JwtService>();
 
         services.AddSingleton<IGameRepository, GameRepository>();
         services.AddSingleton<IGameCollectionRepository, GameCollectionRepository>();

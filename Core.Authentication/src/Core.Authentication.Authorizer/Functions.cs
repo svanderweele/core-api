@@ -1,10 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -18,36 +19,50 @@ public class Functions
 
     public Functions()
     {
-        _key = Environment.GetEnvironmentVariable("SECRET") ??
-               throw new NullReferenceException("JWT Secret is missing!");
+        _key = Environment.GetEnvironmentVariable("JWT_SECRET") ??
+               throw new NullReferenceException("Secret is missing!");
     }
 
-    public APIGatewayCustomAuthorizerResponse ValidateToken(APIGatewayCustomAuthorizerRequest request)
+    public APIGatewayCustomAuthorizerResponse ValidateToken(APIGatewayCustomAuthorizerRequest request,
+        ILambdaContext context)
     {
-        var authToken = request.Headers[HeaderNames.Authorization] ??
-                        throw new NullReferenceException("Missing Authorization header");
-        
-        //TODO: Use HttpClient to call Auth API validate endpoint rather than parsing internally
-
-        var claimsPrincipal = GetClaimsPrincipal(authToken);
-        var effect = claimsPrincipal == null ? "Deny" : "Allow";
-        var principalId = claimsPrincipal == null ? "401" : claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value;
-        return new APIGatewayCustomAuthorizerResponse()
-        {
-            PrincipalID = principalId,
-            PolicyDocument = new APIGatewayCustomAuthorizerPolicy()
+        var response =
+            new APIGatewayCustomAuthorizerResponse()
             {
-                Statement = new List<APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement>
+                PolicyDocument = new APIGatewayCustomAuthorizerPolicy()
                 {
-                    new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement()
+                    Statement = new List<APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement>
                     {
-                        Effect = effect,
-                        Resource = new HashSet<string> { "*" },
-                        Action = new HashSet<string> { "execute-api:Invoke" }
+                        new()
+                        {
+                            Effect = "Allow",
+                            Resource = new HashSet<string> { "*" },
+                            Action = new HashSet<string> { "execute-api:Invoke" }
+                        }
                     }
                 }
-            }
+            };
+
+        var headers = JsonSerializer.Serialize(request,
+            new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
+
+        var authToken = request.Headers["Authorization"];
+
+        if (authToken == null) return response;
+
+        var claimsPrincipal = GetClaimsPrincipal(authToken);
+        if (claimsPrincipal == null) return response;
+
+        var contextOutput = new APIGatewayCustomAuthorizerContextOutput
+        {
+            [ClaimTypes.NameIdentifier] = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+            [ClaimTypes.Name] = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value,
+            [ClaimTypes.Email] = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value,
         };
+        
+        response.Context = contextOutput;
+
+        return response;
     }
 
     private ClaimsPrincipal? GetClaimsPrincipal(string authToken)
