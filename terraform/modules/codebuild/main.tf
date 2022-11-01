@@ -196,12 +196,7 @@ resource "aws_codebuild_project" "example" {
       name  = "APP_ENVIRONMENT"
       value = terraform.workspace == "dev" ? "dev" : "prod"
     }
-
-    environment_variable {
-      name  = "JWT_SECRET"
-      value = "/${terraform.workspace}/jwt-secret-code"
-      type  = "PARAMETER_STORE"
-    }
+    
   }
 
 
