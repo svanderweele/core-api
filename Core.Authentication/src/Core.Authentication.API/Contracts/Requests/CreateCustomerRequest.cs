@@ -2,19 +2,17 @@ namespace Core.Authentication.API.Contracts.Requests;
 
 public class CreateCustomerRequest
 {
-    public string Username { get; }
+    public string Name { get; }
 
-    public string FullName { get; }
+    public string Password { get; }
 
     public string Email { get; }
 
-    public DateTime DateOfBirth { get; }
 
-    public CreateCustomerRequest(string username, string fullName, string email, DateTime dateOfBirth)
+    public CreateCustomerRequest(string name, string password, string email)
     {
-        Username = username;
-        FullName = fullName;
+        Name = name;
+        Password = password;
         Email = email;
-        DateOfBirth = dateOfBirth;
     }
 }

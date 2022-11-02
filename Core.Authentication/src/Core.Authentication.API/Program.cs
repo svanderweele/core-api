@@ -19,6 +19,17 @@ builder.Services.AddControllers();
 // package will act as the webserver translating request and responses between the Lambda event source and ASP.NET Core.
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Default",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200", "http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer",
@@ -60,7 +71,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
             SymmetricSecurityKey
             (Encoding.UTF8.GetBytes
                 (jwtSettings.Secret)),
-        
+
         ValidateIssuer = true,
         ValidIssuer = jwtSettings.Issuer,
         ValidateLifetime = true,
@@ -69,7 +80,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 
-builder.Services.Configure<ConnectionStringsSettings>(builder.Configuration.GetSection(ConnectionStringsSettings.KeyName));
+builder.Services.Configure<ConnectionStringsSettings>(
+    builder.Configuration.GetSection(ConnectionStringsSettings.KeyName));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.KeyName));
 
 
@@ -103,6 +115,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseCors("Default");
 
 app.UseMiddleware<ExceptionMiddleware>();
 

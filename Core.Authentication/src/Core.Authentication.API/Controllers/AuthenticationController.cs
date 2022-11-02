@@ -40,8 +40,7 @@ public class AuthenticationController : ControllerBase
 
         if (existingCustomer != null)
         {
-            //TODO: Custom exceptions
-            throw new Exception("User with that email already exists");
+            return Conflict(new ErrorResponse("AUTH_EMAIL_EXISTS","User with that email already exists"));
         }
 
         //TODO: Use Automapper to map this
@@ -49,9 +48,8 @@ public class AuthenticationController : ControllerBase
         {
             Id = Guid.NewGuid().ToString(),
             Email = request.Email,
-            Username = request.Username,
-            FullName = request.FullName,
-            DateOfBirth = request.DateOfBirth
+            Name = request.Name,
+            Password = request.Password
         };
 
         _logger.Log(LogLevel.Information, "Got customer information {CustomerEmail}", customer.Email);
@@ -70,11 +68,14 @@ public class AuthenticationController : ControllerBase
         var user = await _customerRepository.GetAsync(request.Email, cancellationToken);
         if (user == null)
         {
-            return NotFound();
+            return Unauthorized(new ErrorResponse("AUTH_INVALID_CREDENTIALS","Invalid Credentials"));
         }
 
         //TODO: Check Password against Cognito?
-        // if (user.Password != tokenRequest.Password) throw new Exception("Invalid Credentials!");
+        if (user.Password != request.Password)
+        {
+            return Unauthorized(new ErrorResponse("AUTH_INVALID_CREDENTIALS","Invalid Credentials"));
+        }
 
         var token = _jwtService.Generate(user);
         return new LoginResponse()
@@ -85,7 +86,7 @@ public class AuthenticationController : ControllerBase
 
 
     [Authorize]
-    [HttpGet("", Name = "Get")]
+    [HttpGet("me", Name = "Get")]
     public async Task<ActionResult<CustomerDto>> Get(CancellationToken cancellationToken)
     {
         var id = User.Claims.SingleOrDefault(e => e.Type == ClaimTypes.Email);
@@ -96,7 +97,7 @@ public class AuthenticationController : ControllerBase
 
         if (customer == null)
         {
-            return NotFound();
+            return NotFound(new ErrorResponse("AUTH_USER_NOT_FOUND", "User with that email was not found"));
         }
 
         return Ok(customer);

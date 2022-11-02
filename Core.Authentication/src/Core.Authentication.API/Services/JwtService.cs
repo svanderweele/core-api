@@ -28,7 +28,7 @@ public class JwtService : IJwtService
         var claims = new List<Claim>
         {
             new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
         

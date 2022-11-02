@@ -9,8 +9,7 @@ public class CreateCustomerRequestValidator: AbstractValidator<CreateCustomerReq
     public CreateCustomerRequestValidator()
     {
         RuleFor(x => x.Email).NotEmpty();
-        RuleFor(x => x.FullName).NotEmpty();
-        RuleFor(x => x.Username).NotEmpty();
-        RuleFor(x => x.DateOfBirth).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty();
     }
 }

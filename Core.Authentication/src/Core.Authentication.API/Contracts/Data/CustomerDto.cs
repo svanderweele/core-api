@@ -13,11 +13,11 @@ public class CustomerDto
     [JsonPropertyName("id")]
     public string Id { get;  init;  } = default!;
 
-    [JsonPropertyName("username")]
-    public string Username { get; init; } = default!;
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = default!;
 
-    [JsonPropertyName("full_name")]
-    public string FullName { get; init; } = default!;
+    [JsonPropertyName("password")]
+    public string Password { get; init; } = default!;
 
     [JsonPropertyName("email")]
     public string Email { get; init; } = default!;

@@ -6,8 +6,11 @@ public class ErrorResponse
 
     public string? Error { get;  }
 
-    public ErrorResponse(string message, string? error)
+    public string Code { get;  }
+
+    public ErrorResponse(string code, string message, string? error = null)
     {
+        Code = code;
         Message = message;
         Error = error;
     }
