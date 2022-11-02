@@ -115,7 +115,7 @@ A simple application built to become more familiar with .NET 6 as well as best p
 - [ ] Share code via submodules
 - [ ] Consider a different approach to data handling with DynamoDB
 - [ ] Resolve issue with CodeBuild pipeline
-- [ ] FE side to it. A simple web app hosted on netlify (built in either next or angular) working with the API
+- [x] FE side to it. A simple web app hosted on AWS s3 (built in either next or angular) working with the API [WIP](http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com/)
 
 See the [open issues](https://github.com/svanderweele/core-api/issues) for a full list of proposed features (and known issues).
 
