@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CasinoPageComponent } from './casino-page.component';
+import { HomePageComponent } from './home-page.component';
 
-describe('CasinoPageComponent', () => {
-  let component: CasinoPageComponent;
-  let fixture: ComponentFixture<CasinoPageComponent>;
+describe('HomePageComponent', () => {
+  let component: HomePageComponent;
+  let fixture: ComponentFixture<HomePageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CasinoPageComponent],
+      declarations: [HomePageComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CasinoPageComponent);
+    fixture = TestBed.createComponent(HomePageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

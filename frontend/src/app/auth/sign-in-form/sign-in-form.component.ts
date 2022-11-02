@@ -7,11 +7,13 @@ import {
   Validators,
   FormControl,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { ErrorMessage } from 'src/app/globals';
 import { AuthService } from '../auth.service';
 import { UserService } from '../user.service';
+
+import { ToastrService } from 'ngx-toastr';
 
 @UntilDestroy()
 @Component({
@@ -27,7 +29,9 @@ export class SignInFormComponent {
     fb: FormBuilder,
     private authService: AuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private toastrService: ToastrService
   ) {
     this.form = fb.group({
       email: [
@@ -35,6 +39,12 @@ export class SignInFormComponent {
         [Validators.required, Validators.email],
       ],
       password: ['Test123', [Validators.required]],
+    });
+
+    this.route.queryParams.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val['email']) {
+        this.form.get('email')?.setValue(val['email']);
+      }
     });
   }
 
@@ -54,8 +64,10 @@ export class SignInFormComponent {
         catchError((err: HttpErrorResponse) => {
           if (err.error.code === 'AUTH_INVALID_CREDENTIALS') {
             this.errors.push({ key: 'errors.invalid_credentials' });
+            this.toastrService.error('Invalid credentials.');
           }
           this.isLoading = false;
+
           return of();
         })
       )
@@ -70,6 +82,8 @@ export class SignInFormComponent {
             this.userService.setUser(val);
 
             this.router.navigate(['casino']);
+
+            this.toastrService.success('Login successful.');
           });
       });
   }
