@@ -7,9 +7,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { catchError, of } from 'rxjs';
-import { ErrorMessage, ErrorResponse } from 'src/app/globals';
+import { ErrorMessage } from 'src/app/globals';
 import { AuthService } from '../auth.service';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Router } from '@angular/router';
 
+@UntilDestroy()
 @Component({
   selector: 'app-sign-up-form',
   templateUrl: './sign-up-form.component.html',
@@ -20,7 +23,11 @@ export class SignUpFormComponent {
   errors: ErrorMessage[] = [];
   isLoading = false;
 
-  constructor(fb: FormBuilder, private authService: AuthService) {
+  constructor(
+    fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.form = fb.group({
       name: ['Simon', Validators.required],
       email: [
@@ -43,7 +50,8 @@ export class SignUpFormComponent {
     this.authService
       .registerUser(this.form.value)
       .pipe(
-        catchError((err: HttpErrorResponse, caught) => {
+        untilDestroyed(this),
+        catchError((err: HttpErrorResponse) => {
           if (err.error.code === 'AUTH_EMAIL_EXISTS') {
             this.errors.push({ key: 'errors.invalid_credentials' });
           }
@@ -51,8 +59,9 @@ export class SignUpFormComponent {
           return of();
         })
       )
-      .subscribe((response) => {
+      .subscribe(() => {
         this.isLoading = false;
+        this.router.navigate(['login']);
       });
   }
 }
