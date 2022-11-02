@@ -12,6 +12,8 @@ import { AuthService } from '../auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Router } from '@angular/router';
 
+import { ToastrService } from 'ngx-toastr';
+
 @UntilDestroy()
 @Component({
   selector: 'app-sign-up-form',
@@ -26,6 +28,7 @@ export class SignUpFormComponent {
   constructor(
     fb: FormBuilder,
     private authService: AuthService,
+    private toastrService: ToastrService,
     private router: Router
   ) {
     this.form = fb.group({
@@ -53,7 +56,8 @@ export class SignUpFormComponent {
         untilDestroyed(this),
         catchError((err: HttpErrorResponse) => {
           if (err.error.code === 'AUTH_EMAIL_EXISTS') {
-            this.errors.push({ key: 'errors.invalid_credentials' });
+            this.errors.push({ key: 'errors.email_already_exists' });
+            this.toastrService.error('Email already registered.');
           }
           this.isLoading = false;
           return of();
@@ -61,7 +65,11 @@ export class SignUpFormComponent {
       )
       .subscribe(() => {
         this.isLoading = false;
-        this.router.navigate(['login']);
+
+        this.toastrService.success("Congrats! You're in.");
+        this.router.navigate(['login'], {
+          queryParams: { email: this.form.get('email')?.value },
+        });
       });
   }
 }

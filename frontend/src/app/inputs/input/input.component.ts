@@ -1,10 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit,
-} from '@angular/core';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 type InputType = 'text' | 'password' | 'number';
 
@@ -17,7 +12,7 @@ export class InputComponent implements OnInit {
   @Input() control!: FormControl;
   @Input() controlName!: string;
 
-  @Input() placeholder: string = '';
+  @Input() placeholder = '';
   @Input() inputType: InputType = 'text';
 
   ngOnInit(): void {
