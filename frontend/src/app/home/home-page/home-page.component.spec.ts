@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterModule } from '@angular/router';
 
 import { HomePageComponent } from './home-page.component';
 
@@ -9,6 +10,7 @@ describe('HomePageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HomePageComponent],
+      imports: [RouterModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomePageComponent);
