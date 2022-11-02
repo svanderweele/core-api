@@ -1,0 +1,34 @@
+<div>
+  <label for="password" class="sr-only">Password</label>
+  <input
+    type="{{ inputType }}"
+    [formControl]="control"
+    autocomplete="{{ controlName }}"
+    required
+    class="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+    placeholder="{{ placeholder }}"
+  />
+
+  <ng-container *ngIf="control.invalid && (control.dirty || control.touched)">
+    <p
+      class="text-red-800 p-2"
+      *ngIf="control.errors && control.errors['required']"
+    >
+      Please enter value
+    </p>
+    <p
+      class="text-red-800 p-2"
+      *ngIf="control.errors && control.errors['minlength']"
+    >
+      Minimum Length is
+      {{ control.errors["minlength"].requiredLength }} characters
+    </p>
+
+    <p
+      class="text-red-800 p-2"
+      *ngIf="control.errors && control.errors['email']"
+    >
+      Format is incorrect. Example test@gmail.com
+    </p>
+  </ng-container>
+</div>
