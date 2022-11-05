@@ -84,13 +84,14 @@
       >
         <ng-container *ngIf="(user$ | async) === null">
           <ng-container *ngFor="let nav of secondaryNavUrls">
-            <a
-              href="{{ nav.path }}"
-              [ngClass]="{ 'bg-gray-900': router.url === nav.path }"
-              class="text-white px-3 py-2 rounded-md text-sm font-medium"
-              aria-current="page"
-              >{{ nav.key }}</a
-            >
+            <button (click)="navigate(nav.path)">
+              <a
+                [ngClass]="{ 'bg-gray-900': router.url === nav.path }"
+                class="text-white px-3 py-2 rounded-md text-sm font-medium"
+                aria-current="page"
+                >{{ nav.key }}</a
+              >
+            </button>
           </ng-container>
         </ng-container>
 
@@ -113,13 +114,13 @@
             </div>
           </div>
 
-          <a
-            (click)="signOut()"
-            href=""
-            class="text-white px-3 py-2 rounded-md text-sm font-medium"
-            aria-current="page"
-            >Sign Out</a
-          >
+          <button (click)="signOut()">
+            <a
+              class="text-white px-3 py-2 rounded-md text-sm font-medium"
+              aria-current="page"
+              >Sign Out</a
+            >
+          </button>
         </ng-container>
       </div>
     </div>
@@ -129,30 +130,19 @@
   <div class="sm:hidden" id="mobile-menu">
     <div class="space-y-1 px-2 pt-2 pb-3">
       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-      <a
-        href="#"
-        class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-        aria-current="page"
-        >Dashboard</a
-      >
 
-      <a
-        href="#"
-        class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-        >Team</a
-      >
-
-      <a
-        href="#"
-        class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-        >Projects</a
-      >
-
-      <a
-        href="#"
-        class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-        >Calendar</a
-      >
+      <ng-container *ngFor="let nav of mainNavUrls">
+        <a
+          (click)="navigate(nav.path)"
+          [ngClass]="{
+            'bg-gray-900': router.url === nav.path,
+            'hover:bg-gray-700': router.url !== nav.path
+          }"
+          class="text-white block px-3 py-2 rounded-md text-base font-medium"
+          aria-current="page"
+          >{{ nav.key }}</a
+        >
+      </ng-container>
     </div>
   </div>
 </nav>

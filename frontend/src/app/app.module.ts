@@ -7,7 +7,6 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
-import { AuthModule } from './auth/auth.module';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthGuard } from './guards/AuthGuard';
 import { NotLoggedInGuard } from './guards/NotLoggedInGuard';
@@ -17,7 +16,6 @@ import { NotLoggedInGuard } from './guards/NotLoggedInGuard';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AuthModule,
     HttpClientModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),

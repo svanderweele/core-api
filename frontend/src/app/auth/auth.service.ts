@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {
+  GetUserResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -20,21 +21,24 @@ export class AuthService {
 
   registerUser(request: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(
-      `${environment.apiUrl}/api/authentication/register`,
+      `${environment.authApiUrl}/api/authentication/register`,
       request
     );
   }
 
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(
-      `${environment.apiUrl}/api/authentication/login`,
+      `${environment.authApiUrl}/api/authentication/login`,
       request
     );
   }
 
-  getUserByToken(token: string): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/api/authentication/me`, {
-      headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
-    });
+  getUserByToken(token: string): Observable<GetUserResponse> {
+    return this.http.get<User>(
+      `${environment.authApiUrl}/api/authentication/me`,
+      {
+        headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+      }
+    );
   }
 }

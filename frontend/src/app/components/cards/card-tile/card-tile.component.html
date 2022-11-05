@@ -1,0 +1,34 @@
+<div class="w-36 inline-block">
+  <div class="relative">
+    <img
+      class="rounded-lg"
+      src="{{ thumbnail }}"
+      width="100%"
+      height="100%"
+      alt="game image"
+    />
+
+    <div
+      class="absolute w-full h-full top-0 bg-black bg-opacity-0 opacity-0 hover:bg-opacity-60 hover:opacity-100 transition ease-in-out"
+    >
+      <h3
+        class="mx-auto text-center p-5 text-white whitespace-nowrap overflow-ellipsis overflow-hidden"
+      >
+        {{ name }}
+      </h3>
+      <div class="text-center w-full">
+        <button
+          (click)="playGame()"
+          class="bg-green-400 text-white font-bold py-1 px-2 rounded w-10/12"
+        >
+          Play Game
+        </button>
+      </div>
+    </div>
+  </div>
+  <h3
+    class="mx-auto text-center p-2 text-black whitespace-nowrap overflow-ellipsis overflow-hidden"
+  >
+    {{ name }}
+  </h3>
+</div>

@@ -18,22 +18,22 @@ type Url = {
 export class NavbarComponent {
   mainNavUrls: Url[] = [
     {
-      path: '',
+      path: '/',
       key: 'nav.home',
     },
     {
-      path: 'casino',
+      path: '/casino',
       key: 'nav.casino',
     },
   ];
 
   secondaryNavUrls: Url[] = [
     {
-      path: 'register',
+      path: '/authentication/register',
       key: 'nav.register',
     },
     {
-      path: 'login',
+      path: '/authentication/login',
       key: 'nav.login',
     },
   ];
@@ -50,5 +50,6 @@ export class NavbarComponent {
 
   signOut(): void {
     this.userService.logout();
+    this.router.navigate(['/']);
   }
 }
