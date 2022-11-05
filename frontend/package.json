@@ -21,6 +21,8 @@
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
     "@ngneat/until-destroy": "^9.2.2",
+    "@ngx-translate/core": "^14.0.0",
+    "@ngx-translate/http-loader": "^7.0.0",
     "ngx-device-detector": "^4.0.1",
     "ngx-infinite-scroll": "^14.0.0",
     "ngx-toastr": "^15.2.1",

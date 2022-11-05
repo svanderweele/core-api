@@ -60,7 +60,9 @@
       <div
         class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"
       >
-        <div class="flex flex-shrink-0 items-center text-white">Core App</div>
+        <div class="flex flex-shrink-0 items-center text-white">
+          {{ 'app_name' | translate }}
+        </div>
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
             <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
@@ -71,7 +73,7 @@
                   [ngClass]="{ 'bg-gray-900': router.url === nav.path }"
                   class="text-white px-3 py-2 rounded-md text-sm font-medium"
                   aria-current="page"
-                  >{{ nav.key }}</a
+                  >{{ nav.key | translate }}</a
                 >
               </button>
             </ng-container>
@@ -89,11 +91,16 @@
                 [ngClass]="{ 'bg-gray-900': router.url === nav.path }"
                 class="text-white px-3 py-2 rounded-md text-sm font-medium"
                 aria-current="page"
-                >{{ nav.key }}</a
+                >{{ nav.key | translate }}</a
               >
             </button>
           </ng-container>
         </ng-container>
+
+        <select (change)="onSelect($event)">
+          <option value="en">English</option>
+          <option value="fr">French</option>
+        </select>
 
         <!-- Profile dropdown -->
         <ng-container *ngIf="user$ | async as user">
@@ -118,7 +125,7 @@
             <a
               class="text-white px-3 py-2 rounded-md text-sm font-medium"
               aria-current="page"
-              >Sign Out</a
+              >{{ 'nav.signout' | translate }}</a
             >
           </button>
         </ng-container>
@@ -140,7 +147,7 @@
           }"
           class="text-white block px-3 py-2 rounded-md text-base font-medium"
           aria-current="page"
-          >{{ nav.key }}</a
+          >{{ nav.key | translate }}</a
         >
       </ng-container>
     </div>
