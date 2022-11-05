@@ -1,10 +1,11 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ToastrService } from 'ngx-toastr';
+import { catchError, of } from 'rxjs';
 import { User } from 'src/app/auth/auth.models';
 import { UserService } from 'src/app/auth/user.service';
-import { Game } from '../game.models';
 import { GameService } from '../game.service';
 
 @UntilDestroy()
@@ -44,8 +45,21 @@ export class CardTileComponent {
 
     this.gameService
       .playGame(this.user.token, this.id)
+      .pipe(
+        untilDestroyed(this),
+        catchError((err: HttpErrorResponse) => {
+          if (err.error.code === 'SESSION_ALREADY_STARTED') {
+            this.toastrService.error(`${this.name} is already playing.`);
+          }
+          return of();
+        })
+      )
       .subscribe((response) => {
         console.log('Play Game Resposne ', response);
+
+        if (response.game_url) {
+          this.toastrService.success(`Started playing ${this.name}.`);
+        }
       });
   }
 }

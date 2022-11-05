@@ -9,8 +9,8 @@ export type Game = {
 };
 
 export interface PlayGameResponse {
-  sessionId: string;
-  gameUrl: string;
+  session_id: string;
+  game_url: string;
   expiry: string;
 }
 
