@@ -14,22 +14,18 @@ public class GamesController : ControllerBase
 {
     private readonly IGameService _service;
     private readonly IValidator<CreateGameRequest> _validator;
-    private readonly ILogger _logger;
 
-    public GamesController(IGameService service, IValidator<CreateGameRequest> validator, ILogger<GamesController> logger)
+    public GamesController(IGameService service, IValidator<CreateGameRequest> validator)
     {
         _service = service;
         _validator = validator;
-        _logger = logger;
     }
 
     
     [HttpGet("")]
-    public async Task<GetAllGamesResponse> GetAll([FromQuery] string? startKey, CancellationToken cancellationToken)
+    public async Task<GetAllGamesResponse> GetAll([FromQuery] int? limit, [FromQuery] string? startKey, CancellationToken cancellationToken)
     {
-        _logger.Log(LogLevel.Debug, "[A] Get All Games");
-        var games = await _service.GetAllAsync(cancellationToken, startKey);
-        _logger.Log(LogLevel.Debug, "[H] Got All Games");
+        var games = await _service.GetAllAsync(cancellationToken, limit ?? 20, startKey);
         return games;
     }
 

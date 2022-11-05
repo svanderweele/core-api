@@ -39,12 +39,12 @@ public class GameRepository : IGameRepository
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
-    public async Task<ScanResponse?> GetAllAsync(CancellationToken cancellationToken, string? startKey)
+    public async Task<ScanResponse?> GetAllAsync(CancellationToken cancellationToken,int limit, string? startKey)
     {
         var scanRequest = new ScanRequest()
         {
             TableName = TableName,
-            Limit = 2,
+            Limit = limit,
             ExclusiveStartKey = startKey != null
                 ? new Dictionary<string, AttributeValue>()
                 {

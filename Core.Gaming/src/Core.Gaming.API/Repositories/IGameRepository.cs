@@ -8,7 +8,7 @@ public interface IGameRepository
     
     Task<bool> CreateAsync(Game game, CancellationToken cancellationToken);
 
-    Task<ScanResponse?> GetAllAsync(CancellationToken cancellationToken, string? startKey);
+    Task<ScanResponse?> GetAllAsync(CancellationToken cancellationToken,int limit, string? startKey);
     Task<Game?> GetAsync(Guid id, CancellationToken cancellationToken);
 
     Task<bool> UpdateAsync(Game game, CancellationToken cancellationToken);

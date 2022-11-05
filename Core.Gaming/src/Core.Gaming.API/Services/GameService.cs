@@ -29,11 +29,9 @@ public class GameService : IGameService
     }
 
     //TODO: Try Nest Sub-Collections inside the model and retrieve by id 
-    public async Task<GetAllGamesResponse> GetAllAsync(CancellationToken cancellationToken, string? startKey)
+    public async Task<GetAllGamesResponse> GetAllAsync(CancellationToken cancellationToken, int limit, string? startKey)
     {
-        _logger.Log(LogLevel.Debug, "[B] Get All DB Games");
-
-        var scanResponse = await _repository.GetAllAsync(cancellationToken, startKey);
+        var scanResponse = await _repository.GetAllAsync(cancellationToken, limit, startKey);
 
         if (scanResponse == null)
         {
@@ -46,7 +44,6 @@ public class GameService : IGameService
             return JsonSerializer.Deserialize<Game>(document.ToJson());
         }).OfType<Game>();
 
-        _logger.Log(LogLevel.Debug, "[C] Got All DB Games");
         var games = await Task.WhenAll(dbGames.Select(e => PopulateGame(e, cancellationToken)));
 
         LastEvaluatedKey? lastKey = null;
@@ -83,7 +80,6 @@ public class GameService : IGameService
         var collections = new List<GameCollectionDto>();
         foreach (var collectionId in game.GameCollections)
         {
-            _logger.Log(LogLevel.Debug, "[D] Get Collections");
             var collection = await _collectionRepository.GetAsync(collectionId, cancellationToken);
             if (collection != null)
             {
@@ -92,7 +88,6 @@ public class GameService : IGameService
             }
         }
 
-        _logger.Log(LogLevel.Debug, "[E] Got Collections");
         var category = await _categoryRepository.GetAsync(game.GameCategory, cancellationToken);
 
         if (category == null)
@@ -101,7 +96,6 @@ public class GameService : IGameService
             throw new Exception($"Game Category not found {game.Id}");
         }
 
-        _logger.Log(LogLevel.Debug, "[F] Got Game");
         return new GameSimpleDto(game, collections, category);
     }
 

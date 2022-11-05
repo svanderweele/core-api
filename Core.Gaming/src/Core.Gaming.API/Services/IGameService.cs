@@ -5,7 +5,7 @@ namespace Core.Gaming.API.Services;
 
 public interface IGameService
 {
-    Task<GetAllGamesResponse> GetAllAsync(CancellationToken cancellationToken, string? startKey);
+    Task<GetAllGamesResponse> GetAllAsync(CancellationToken cancellationToken, int limit, string? startKey);
 
     Task<GameSimpleDto?> GetAsync(Guid id, CancellationToken cancellationToken);
 

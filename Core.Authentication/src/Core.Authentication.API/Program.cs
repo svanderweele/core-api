@@ -21,13 +21,9 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Default",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:4200", "http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+    options.DefaultPolicyName = "Default";
+    options.AddPolicy("Default", policyBuilder =>
+        policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
 builder.Services.AddSwaggerGen(c =>
@@ -115,8 +111,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-app.UseCors("Default");
+app.UseCors();
 
 app.UseMiddleware<ExceptionMiddleware>();
 

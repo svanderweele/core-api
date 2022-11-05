@@ -86,6 +86,12 @@ builder.Services.AddSwaggerGen(c =>
 var awsOptions = builder.Configuration.GetAWSOptions();
 builder.Services.AddDefaultAWSOptions(awsOptions);
 
+builder.Services.AddCors(options =>
+{
+    options.DefaultPolicyName = "Default";
+    options.AddPolicy("Default", policyBuilder =>
+        policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection(DatabaseSettings.KeyName));
 
@@ -123,6 +129,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
