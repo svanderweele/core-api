@@ -1,7 +1,8 @@
-<div>
+<div class="min-h-full sm:mb-80">
   <div
     infinite-scroll
-    [infiniteScrollDistance]="2"
+    [infiniteScrollDistance]="3"
+    [infiniteScrollThrottle]="1000"
     (scrolled)="onScroll()"
     class="mx-5"
   >
