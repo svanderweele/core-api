@@ -3,6 +3,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PaginationService } from 'src/app/globals';
 import { Game } from '../game.models';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { environment } from 'src/environments/environment';
 
 @UntilDestroy()
 @Component({
@@ -11,7 +12,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
   styleUrls: ['./card-list.component.css'],
 })
 export class CardListComponent {
-  itemsPerPage = 10;
+  itemsPerPage = environment.pagination.desktop;
 
   lastItemKey?: string = undefined;
   isLoading = false;
@@ -26,7 +27,7 @@ export class CardListComponent {
     private deviceDetectorService: DeviceDetectorService
   ) {
     if (this.deviceDetectorService.isMobile()) {
-      this.itemsPerPage = 3;
+      this.itemsPerPage = environment.pagination.mobile;
     }
 
     this.loadGames();
