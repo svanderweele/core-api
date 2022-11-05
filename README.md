@@ -40,7 +40,7 @@
     <a href="https://github.com/svanderweele/core-api"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/svanderweele/core-api">View Demo</a>
+    <a href="http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com">View Demo</a>
     ·
     <a href="https://github.com/svanderweele/core-api/issues">Report Bug</a>
     ·
