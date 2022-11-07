@@ -113,7 +113,7 @@ A simple application built to become more familiar with .NET 6 as well as best p
 - [x] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
 - [x] Resolve issue with CodeBuild pipeline
 - [x] FE side to it. A simple web app hosted on AWS s3 (built in either next or angular) working with the API [WIP](http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com/)
-- [ ] Improve error handling/responses
+- [ ] [FE] Better Error handling using HTTP Interceptors & Passing Auth Token in the same manner
 - [ ] Consider a different approach to data handling with DynamoDB
 
 See the [open issues](https://github.com/svanderweele/core-api/issues) for a full list of proposed features (and known issues).
