@@ -110,9 +110,9 @@ A simple application built to become more familiar with .NET 6 as well as best p
   - [x] Dynamic Config handled through [AWS Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
 - [x] Terraform Refactoring
 - [x] Auth Token Validation should be improved
-- [x] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
 - [x] Resolve issue with CodeBuild pipeline
 - [x] FE side to it. A simple web app hosted on AWS s3 (built in either next or angular) working with the API [WIP](http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com/)
+- [x] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
 - [ ] [FE] Better Error handling using HTTP Interceptors & Passing Auth Token in the same manner
 - [ ] Consider a different approach to data handling with DynamoDB
 
