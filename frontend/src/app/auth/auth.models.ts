@@ -20,7 +20,13 @@ export type LoginResponse = {
   token: string;
 };
 
+export type GetUserResponse = {
+  email: string;
+  name: string;
+};
+
 export type User = {
+  token: string;
   email: string;
   name: string;
 };

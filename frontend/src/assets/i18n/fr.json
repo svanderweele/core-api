@@ -1,0 +1,8 @@
+{
+    "nav.home": "Maison",
+    "nav.casino": "Casino",
+    "nav.register": "S'inscrire",
+    "nav.login": "Connexion",
+    "nav.signout": "Se déconnecter",
+    "app_name":"Core App"
+}

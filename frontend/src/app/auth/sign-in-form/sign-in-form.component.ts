@@ -14,6 +14,7 @@ import { AuthService } from '../auth.service';
 import { UserService } from '../user.service';
 
 import { ToastrService } from 'ngx-toastr';
+import { AppService } from 'src/app/app.service';
 
 @UntilDestroy()
 @Component({
@@ -31,8 +32,11 @@ export class SignInFormComponent {
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private appService: AppService
   ) {
+    this.appService.setCurrentPage('Login');
+
     this.form = fb.group({
       email: [
         'vanderweelesimon@gmail.com',
@@ -79,7 +83,7 @@ export class SignInFormComponent {
           .getUserByToken(response.token)
           .pipe(untilDestroyed(this))
           .subscribe((val) => {
-            this.userService.setUser(val);
+            this.userService.setUser({ ...val, token: response.token });
 
             this.router.navigate(['casino']);
 

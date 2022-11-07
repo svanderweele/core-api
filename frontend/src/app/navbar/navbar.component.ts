@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { User } from '../auth/auth.models';
 import { UserService } from '../auth/user.service';
@@ -18,30 +19,42 @@ type Url = {
 export class NavbarComponent {
   mainNavUrls: Url[] = [
     {
-      path: '',
+      path: '/',
       key: 'nav.home',
     },
     {
-      path: 'casino',
+      path: '/casino',
       key: 'nav.casino',
     },
   ];
 
   secondaryNavUrls: Url[] = [
     {
-      path: 'register',
+      path: '/authentication/register',
       key: 'nav.register',
     },
     {
-      path: 'login',
+      path: '/authentication/login',
       key: 'nav.login',
     },
   ];
 
   user$: Observable<User | null>;
 
-  constructor(public router: Router, private userService: UserService) {
+  constructor(
+    public router: Router,
+    private userService: UserService,
+    private translate: TranslateService
+  ) {
     this.user$ = userService.getUser();
+  }
+
+  onSelect(val: Event): void {
+    const select = val.target as HTMLSelectElement;
+    const language = select.value;
+    if (language) {
+      this.translate.use(language);
+    }
   }
 
   navigate(url: Urls): void {
@@ -50,5 +63,6 @@ export class NavbarComponent {
 
   signOut(): void {
     this.userService.logout();
+    this.router.navigate(['/']);
   }
 }

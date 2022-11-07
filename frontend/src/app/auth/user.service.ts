@@ -26,6 +26,7 @@ export class UserService {
   }
 
   getUser(): Observable<User | null> {
+    //TODO: Call the /me endpoint to confirm the token is still valid
     const userItem = localStorage.getItem('user');
 
     if (userItem) {

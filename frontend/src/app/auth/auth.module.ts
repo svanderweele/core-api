@@ -8,6 +8,7 @@ import { AuthPageComponent } from './auth-page/auth-page.component';
 import { SignInFormComponent } from './sign-in-form/sign-in-form.component';
 import { SignUpFormComponent } from './sign-up-form/sign-up-form.component';
 import { NotLoggedInGuard } from '../guards/NotLoggedInGuard';
+import { TranslateModule } from '@ngx-translate/core';
 
 const ROUTES: Route[] = [
   {
@@ -26,6 +27,7 @@ const ROUTES: Route[] = [
   imports: [
     CommonModule,
     RouterModule.forChild(ROUTES),
+    TranslateModule.forChild({ extend: true }),
     ReactiveFormsModule,
     InputsModule,
   ],

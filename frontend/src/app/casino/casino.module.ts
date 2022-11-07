@@ -6,6 +6,7 @@ import { Route, RouterModule } from '@angular/router';
 import { CasinoPageComponent } from './casino-page/casino-page.component';
 import { InputsModule } from '../inputs/inputs.module';
 import { AuthGuard } from '../guards/AuthGuard';
+import { CardsModule } from '../components/cards/cards.module';
 
 const ROUTES: Route[] = [
   {
@@ -23,6 +24,7 @@ const ROUTES: Route[] = [
     RouterModule.forChild(ROUTES),
     ReactiveFormsModule,
     InputsModule,
+    CardsModule,
   ],
 })
 export class CasinoModule {}

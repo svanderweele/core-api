@@ -13,6 +13,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Router } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
+import { AppService } from 'src/app/app.service';
 
 @UntilDestroy()
 @Component({
@@ -27,10 +28,13 @@ export class SignUpFormComponent {
 
   constructor(
     fb: FormBuilder,
+    private appService: AppService,
     private authService: AuthService,
     private toastrService: ToastrService,
     private router: Router
   ) {
+    this.appService.setCurrentPage('Register');
+
     this.form = fb.group({
       name: ['Simon', Validators.required],
       email: [
