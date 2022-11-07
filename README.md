@@ -112,7 +112,7 @@ A simple application built to become more familiar with .NET 6 as well as best p
 - [x] Auth Token Validation should be improved
 - [x] Resolve issue with CodeBuild pipeline
 - [x] FE side to it. A simple web app hosted on AWS s3 (built in either next or angular) working with the API [WIP](http://dev-core-game-bucket.s3-website-eu-west-1.amazonaws.com/)
-- [x] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
+- [ ] AWS VPC needs to be redesigned to strengthen security for AWS resources (mainly lambda & codebuild permissions)
 - [ ] [FE] Better Error handling using HTTP Interceptors & Passing Auth Token in the same manner
 - [ ] Consider a different approach to data handling with DynamoDB
 
