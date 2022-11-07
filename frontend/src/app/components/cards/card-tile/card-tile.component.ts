@@ -55,8 +55,6 @@ export class CardTileComponent {
         })
       )
       .subscribe((response) => {
-        console.log('Play Game Resposne ', response);
-
         if (response.game_url) {
           this.toastrService.success(`Started playing ${this.name}.`);
         }

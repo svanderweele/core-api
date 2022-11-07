@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Core.Authentication.API.Contracts.Data;
 using Core.Authentication.API.Contracts.Requests;
 using Core.Authentication.API.Contracts.Responses;
@@ -9,7 +7,6 @@ using Core.Authentication.API.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Core.Authentication.API.Controllers;
 
@@ -17,15 +14,13 @@ namespace Core.Authentication.API.Controllers;
 [Route("api/[controller]")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly ILogger<AuthenticationController> _logger;
     private readonly ICustomerRepository _customerRepository;
     private readonly IValidator<CreateCustomerRequest> _createCustomerValidator;
     private readonly IJwtService _jwtService;
 
-    public AuthenticationController(ILogger<AuthenticationController> logger, ICustomerRepository customerRepository,
+    public AuthenticationController(ICustomerRepository customerRepository,
         IValidator<CreateCustomerRequest> createCustomerValidator, IJwtService jwtService)
     {
-        _logger = logger;
         _customerRepository = customerRepository;
         _createCustomerValidator = createCustomerValidator;
         _jwtService = jwtService;
@@ -40,7 +35,7 @@ public class AuthenticationController : ControllerBase
 
         if (existingCustomer != null)
         {
-            return Conflict(new ErrorResponse("AUTH_EMAIL_EXISTS","User with that email already exists"));
+            return Conflict(new ErrorResponse("AUTH_EMAIL_EXISTS", "User with that email already exists"));
         }
 
         //TODO: Use Automapper to map this
@@ -52,8 +47,6 @@ public class AuthenticationController : ControllerBase
             Password = request.Password
         };
 
-        _logger.Log(LogLevel.Information, "Got customer information {CustomerEmail}", customer.Email);
-
         await _customerRepository.CreateAsync(customer, cancellationToken);
 
         return CreatedAtRoute("Get", routeValues: new { id = customer.Id }, value: customer);
@@ -63,18 +56,16 @@ public class AuthenticationController : ControllerBase
     public async Task<ActionResult<LoginResponse>> GenerateTokenAsync(LoginRequest request,
         CancellationToken cancellationToken)
     {
-        _logger.Log(LogLevel.Debug, "Generate JWT Token!");
-
         var user = await _customerRepository.GetAsync(request.Email, cancellationToken);
         if (user == null)
         {
-            return Unauthorized(new ErrorResponse("AUTH_INVALID_CREDENTIALS","Invalid Credentials"));
+            return Unauthorized(new ErrorResponse("AUTH_INVALID_CREDENTIALS", "Invalid Credentials"));
         }
 
         //TODO: Check Password against Cognito?
         if (user.Password != request.Password)
         {
-            return Unauthorized(new ErrorResponse("AUTH_INVALID_CREDENTIALS","Invalid Credentials"));
+            return Unauthorized(new ErrorResponse("AUTH_INVALID_CREDENTIALS", "Invalid Credentials"));
         }
 
         var token = _jwtService.Generate(user);
@@ -92,7 +83,7 @@ public class AuthenticationController : ControllerBase
         var id = User.Claims.SingleOrDefault(e => e.Type == ClaimTypes.Email);
 
         var customerId = id.Value;
-        
+
         var customer = await _customerRepository.GetAsync(customerId, cancellationToken);
 
         if (customer == null)
