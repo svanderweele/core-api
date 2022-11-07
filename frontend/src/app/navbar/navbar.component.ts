@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { User } from '../auth/auth.models';
 import { UserService } from '../auth/user.service';
@@ -40,8 +41,20 @@ export class NavbarComponent {
 
   user$: Observable<User | null>;
 
-  constructor(public router: Router, private userService: UserService) {
+  constructor(
+    public router: Router,
+    private userService: UserService,
+    private translate: TranslateService
+  ) {
     this.user$ = userService.getUser();
+  }
+
+  onSelect(val: Event): void {
+    const select = val.target as HTMLSelectElement;
+    const language = select.value;
+    if (language) {
+      this.translate.use(language);
+    }
   }
 
   navigate(url: Urls): void {
