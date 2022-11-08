@@ -17,8 +17,11 @@ jobs:
           dotnet-quality: "preview"
 
       - name: Enter Gaming Directory
+        run: ls
+
+      - name: Enter Gaming Directory
         run: |
-          cd Core.Gaming/src/Core.Gaming.Api
+          cd ./Core.Gaming/src/Core.Gaming.Api
           dotnet restore
           dotnet build -c Pipeline --no-restore
 
