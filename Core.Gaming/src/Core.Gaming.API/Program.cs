@@ -97,10 +97,6 @@ builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection(Da
 
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 
-var redisEndpoint = builder.Configuration.GetValue<string>("redis:endpoint");
-var multiplexer = ConnectionMultiplexer.Connect(redisEndpoint);
-builder.Services.AddSingleton<IConnectionMultiplexer>(multiplexer);
-
 builder.Services.AddSingleton<IGameRepository, GameRepository>();
 builder.Services.AddSingleton<IGameCollectionRepository, GameCollectionRepository>();
 builder.Services.AddSingleton<IGameCategoryRepository, GameCategoryRepository>();
