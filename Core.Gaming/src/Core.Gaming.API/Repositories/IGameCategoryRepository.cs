@@ -10,8 +10,5 @@ public interface IGameCategoryRepository
     Task<IEnumerable<GameCategory>> GetAllAsync(CancellationToken cancellationToken);
     Task<GameCategory?> GetAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<bool> UpdateAsync(GameCategory category, CancellationToken cancellationToken);
-
-    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
     
 }

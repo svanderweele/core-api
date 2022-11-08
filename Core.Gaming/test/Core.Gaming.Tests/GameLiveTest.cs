@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Core.Gaming.API.Contracts.Requests;
+using Core.Gaming.Tests.Contracts.Requests;
 using Core.Gaming.Tests.Contracts.Responses;
 
 namespace Core.Gaming.Tests;

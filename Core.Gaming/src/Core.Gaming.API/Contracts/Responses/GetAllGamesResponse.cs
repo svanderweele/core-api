@@ -12,7 +12,7 @@ public struct LastEvaluatedKey
 
 public class GetAllGamesResponse
 {
-    [JsonPropertyName(("games"))] public IEnumerable<GameSimpleDto> Games { get; set; }
+    [JsonPropertyName(("games"))] public IEnumerable<GameSimpleDto>? Games { get; set; }
 
     [JsonPropertyName(("last_evaluated_key"))]
     public LastEvaluatedKey? LastEvaluatedKey { get; set; }
