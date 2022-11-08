@@ -36,10 +36,12 @@ jobs:
         run: |
           cd ./Core.Gaming/src/Core.Gaming.API
           chmod +x ./run.sh
+          # TODO: The fact that we're running the API in the background seems like a dirty way to do this but it works for the time being.
+          # There must be a better way to do integration tests. Maybe a package.
           ./run.sh &
         shell: bash
 
       - name: Test API
         run: |
           cd ./Core.Gaming
-          dotnet test --no-restore --verbosity normal
+          dotnet test
