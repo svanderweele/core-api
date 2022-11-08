@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Core.Gaming.API.Contracts.Requests;
+namespace Core.Gaming.Tests.Contracts.Requests;
 
 public class CreateGameRequest
 {

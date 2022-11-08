@@ -92,13 +92,16 @@ public class GameService : IGameService
     {
         //TODO: Get multiple in one query
         var collections = new List<GameCollectionDto>();
-        foreach (var collectionId in game.GameCollections)
+        if (game.GameCollections != null)
         {
-            var collection = await _collectionRepository.GetAsync(collectionId, cancellationToken);
-            if (collection != null)
+            foreach (var collectionId in game.GameCollections)
             {
-                collections.Add(new GameCollectionDto(collection, Array.Empty<GameCollectionDto>(),
-                    Array.Empty<GameSimpleDto>()));
+                var collection = await _collectionRepository.GetAsync(collectionId, cancellationToken);
+                if (collection != null)
+                {
+                    collections.Add(new GameCollectionDto(collection, Array.Empty<GameCollectionDto>(),
+                        Array.Empty<GameSimpleDto>()));
+                }
             }
         }
 
@@ -129,6 +132,11 @@ public class GameService : IGameService
 
     public async Task<PlayGameResponse?> ValidateGameSession(string sessionId)
     {
+        if (_redis == null)
+        {
+            throw new Exception("Redis is not initialised!");
+        }
+
         var db = _redis.GetDatabase();
         var sessionRedisValue = await db.StringGetAsync($"GAME_PLAY_{sessionId}");
 
@@ -161,6 +169,11 @@ public class GameService : IGameService
         if (game == null)
         {
             throw new GameNotFoundException(gameId);
+        }
+
+        if (_redis == null)
+        {
+            throw new Exception("Redis is not initialised!");
         }
 
         var db = _redis.GetDatabase();

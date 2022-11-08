@@ -11,7 +11,7 @@ public class Game
     public Guid Id { get; set; }
         
     [JsonPropertyName("display_name")]
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     [JsonPropertyName("display_index")]
     public int DisplayIndex { get; set; }
@@ -23,12 +23,12 @@ public class Game
     public Guid GameCategory { get; set; }
     
     [JsonPropertyName("thumbnail")]
-    public string Thumbnail { get; set; }
+    public string? Thumbnail { get; set; }
     
     //TODO: Consider splitting into its own table
     [JsonPropertyName("devices")]
-    public string[] Devices { get; set; }
+    public string[]? Devices { get; set; }
 
     [JsonPropertyName("collections")]
-    public Guid[] GameCollections { get; set; }
+    public Guid[]? GameCollections { get; set; }
 }

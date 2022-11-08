@@ -82,35 +82,4 @@ public class GameCategoryRepository : IGameCategoryRepository
         var itemAsDocument = Document.FromAttributeMap(response.Item);
         return JsonSerializer.Deserialize<GameCategory>(itemAsDocument.ToJson());
     }
-
-    public async Task<bool> UpdateAsync(GameCategory category, CancellationToken cancellationToken)
-    {
-        var customerJson = JsonSerializer.Serialize(category);
-        var itemAsDocument = Document.FromJson(customerJson);
-        var itemAttributes = itemAsDocument.ToAttributeMap();
-
-        var updateRequest = new PutItemRequest()
-        {
-            TableName = TableName,
-            Item = itemAttributes
-        };
-
-        var response = await _dynamoDb.PutItemAsync(updateRequest, cancellationToken);
-        return response.HttpStatusCode == HttpStatusCode.OK;
-    }
-
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var deleteRequest = new DeleteItemRequest()
-        {
-            TableName = TableName,
-            Key = new Dictionary<string, AttributeValue>()
-            {
-                { "id", new AttributeValue() { S = id.ToString() } },
-            }
-        };
-
-        var response = await _dynamoDb.DeleteItemAsync(deleteRequest, cancellationToken);
-        return response.HttpStatusCode == HttpStatusCode.OK;
-    }
 }

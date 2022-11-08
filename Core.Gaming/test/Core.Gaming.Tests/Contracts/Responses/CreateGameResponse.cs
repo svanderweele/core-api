@@ -1,10 +1,8 @@
 using System.Text.Json.Serialization;
-using Core.Gaming.API.Contracts.Data;
-using Core.Gaming.Tests.Contracts.Data;
 
 namespace Core.Gaming.Tests.Contracts.Responses;
 
-public record CreateGameResponse
+public class CreateGameResponse
 {
     
     [JsonPropertyName("id")]

@@ -9,5 +9,5 @@ public class GameCategory
     public Guid Id { get; set; }
     
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 }
