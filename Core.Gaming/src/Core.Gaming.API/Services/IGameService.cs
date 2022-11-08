@@ -8,6 +8,7 @@ public interface IGameService
     Task<GetAllGamesResponse> GetAllAsync(CancellationToken cancellationToken, int limit, string? startKey);
 
     Task<GameSimpleDto?> GetAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 
     Task<bool> CreateAsync(Game game, CancellationToken cancellationToken);
     Task<IEnumerable<GameSimpleDto>> GetByCollectionId(Guid collectionId, CancellationToken cancellationToken);

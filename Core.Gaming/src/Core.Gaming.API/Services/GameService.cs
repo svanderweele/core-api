@@ -15,17 +15,26 @@ public class GameService : IGameService
 
     private readonly IGameCollectionRepository _collectionRepository;
 
-    private IConnectionMultiplexer _redis;
+    private readonly IConnectionMultiplexer? _redis;
     private readonly ILogger _logger;
 
     public GameService(IGameRepository repository, IGameCategoryRepository categoryRepository,
-        IGameCollectionRepository collectionRepository, ILogger<GameService> logger, IConnectionMultiplexer redis)
+        IGameCollectionRepository collectionRepository, ILogger<GameService> logger, IConfiguration configuration)
     {
+        
         _repository = repository;
         _categoryRepository = categoryRepository;
         _collectionRepository = collectionRepository;
-        _redis = redis;
         _logger = logger;
+        
+        var environment =  Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (environment != "Pipeline" == false)
+        {
+            var redisEndpoint = configuration.GetValue<string>("redis:endpoint");
+            var multiplexer = ConnectionMultiplexer.Connect(redisEndpoint);
+            _redis = multiplexer;
+        }
+
     }
 
     //TODO: Try Nest Sub-Collections inside the model and retrieve by id 
@@ -71,6 +80,11 @@ public class GameService : IGameService
         if (game == null) return null;
 
         return await PopulateGame(game, cancellationToken);
+    }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await _repository.DeleteAsync(id, cancellationToken);
     }
 
     private async Task<GameSimpleDto> PopulateGame(Game game,

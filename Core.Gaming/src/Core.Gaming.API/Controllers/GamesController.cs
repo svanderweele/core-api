@@ -21,12 +21,26 @@ public class GamesController : ControllerBase
         _validator = validator;
     }
 
-    
+
     [HttpGet("")]
-    public async Task<GetAllGamesResponse> GetAll([FromQuery] int? limit, [FromQuery] string? startKey, CancellationToken cancellationToken)
+    public async Task<GetAllGamesResponse> GetAll([FromQuery] int? limit, [FromQuery] string? startKey,
+        CancellationToken cancellationToken)
     {
         var games = await _service.GetAllAsync(cancellationToken, limit ?? 20, startKey);
         return games;
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var isDeleted = await _service.DeleteAsync(id, cancellationToken);
+
+        if (isDeleted == false)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 
     [HttpGet("{id:guid}", Name = "GetGame")]
@@ -42,10 +56,11 @@ public class GamesController : ControllerBase
         return game;
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGameRequest request, CancellationToken cancellationToken)
     {
-       await _validator.ValidateAndThrowAsync(request, cancellationToken);
+        await _validator.ValidateAndThrowAsync(request, cancellationToken);
         //TODO: Mapper for this
         //TODO: Upload Image as Base64 then add URL
         var game = new Game()
@@ -73,12 +88,12 @@ public class GamesController : ControllerBase
         {
             throw new Exception("Invalid Game Id");
         }
-        
+
         var userId = Guid.Parse(this.User.Claims.First(e => e.Type == ClaimTypes.NameIdentifier).Value);
         var game = await _service.PlayGame(userId, gameId, cancellationToken);
         return game;
     }
-    
+
     [Authorize]
     [HttpGet("play/validate/{sessionId}")]
     public async Task<ActionResult<PlayGameResponse>> ValidateGameSession(string sessionId)
@@ -89,7 +104,7 @@ public class GamesController : ControllerBase
         {
             return NotFound();
         }
+
         return session;
     }
-    
 }
