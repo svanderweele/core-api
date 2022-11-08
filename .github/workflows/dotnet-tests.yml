@@ -5,12 +5,16 @@ permissions:
 name: dotnet package
 
 on:
+  push:
   pull_request:
     types:
-      - [opened, ready_for_review]
+      - opened
+    branches:
+      - "releases/**"
 
 jobs:
   build:
+    name: Gaming Integration Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
