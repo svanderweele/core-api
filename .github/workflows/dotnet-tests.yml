@@ -16,16 +16,19 @@ jobs:
           dotnet-version: "6.0.x"
           dotnet-quality: "preview"
 
-      - name: Enter Gaming Directory
-        run: ls
-
-      - name: Enter Gaming Directory
+      - name: Building Gaming API
         run: |
           cd ./Core.Gaming/src/Core.Gaming.API
           dotnet restore
           dotnet build -c Pipeline --no-restore
 
-      - name: Test
+      - name: Run Gaming API
         run: |
           cd ../..
+          chmod +x ./run-api.sh
+          ./run-api.sh
+        shell: bash
+
+      - name: Test
+        run: |
           dotnet test --no-restore --verbosity normal
