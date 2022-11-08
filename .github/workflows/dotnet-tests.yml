@@ -36,7 +36,7 @@ jobs:
         run: |
           cd ./Core.Gaming/src/Core.Gaming.API
           chmod +x ./run.sh
-          ./run.sh
+          ./run.sh &
         shell: bash
 
       - name: Test API
