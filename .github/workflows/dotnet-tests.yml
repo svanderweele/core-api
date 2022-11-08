@@ -24,9 +24,9 @@ jobs:
 
       - name: Run Gaming API
         run: |
-          cd ./Core.Gaming
-          chmod +x ./run-api.sh
-          ./run-api.sh
+          cd ./Core.Gaming/src/Core.Gaming.API
+          chmod +x ./run.sh
+          ./run.sh
         shell: bash
 
       - name: Test API
