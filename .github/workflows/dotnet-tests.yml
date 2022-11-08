@@ -24,11 +24,12 @@ jobs:
 
       - name: Run Gaming API
         run: |
-          ls
+          cd ./Core.Gaming
           chmod +x ./run-api.sh
           ./run-api.sh
         shell: bash
 
-      - name: Test
+      - name: Test API
         run: |
+          cd ./Core.Gaming
           dotnet test --no-restore --verbosity normal
